@@ -1,0 +1,18 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# backup files
+*~
+
+# numpy data files
+*.npy
+
+.venv
+data
+*.pyc
+
+astronet.egg-info

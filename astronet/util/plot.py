@@ -28,6 +28,9 @@ import pandas
 
 from .io import store_results, ensure_dir
 
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
+
 
 def _colorbar_fmt(x, pos):
     fm = '% *d' % (5, x)
@@ -100,7 +103,7 @@ class PlotHelper():
 
         self.verbose = verbose
 
-        self.X_test, _ = self.model._transform_patterns(self.X_test)
+        self.X_test_trans, self.y_test_trans = self.model.ABI_test.transform(self.X_test, self.y_test)
 
     def plot(self, odir):
         for pl in self.plots:
@@ -213,7 +216,7 @@ class PlotHelper():
         ofname =   args['ofname']       if 'ofname'         in args else "activity.png"
         figsize =  args['figsize']      if 'figsize'        in args else (10,10)      
 
-        x = self.X_test[image_i:image_i+1]
+        x = self.X_test_trans[image_i:image_i+1]
         layer = self.network.layers_[layer_i]
 
         if x.shape[0] != 1:

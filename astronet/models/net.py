@@ -42,7 +42,8 @@ class NetGenerator(object):
         
         pass
     
-    def get_instance(self, X, y, net_type,
+    def get_instance(self, net_type, shape, output_size,
+                     regression=False,
                      epochs=100, 
                      learning_rate=0.0002,
                      batch_iterator_train=BatchIterator(128),
@@ -68,7 +69,7 @@ class NetGenerator(object):
                             ('hidden5', lasagne.layers.DenseLayer),
                             ('output', lasagne.layers.DenseLayer),
                             ],
-                        input_shape=(None, X.shape[1], X.shape[2], X.shape[3]),
+                        input_shape=(None, shape[0], shape[1], shape[2]),
                         plotConv1_num_filters=16, plotConv1_filter_size=(3, 3), pool1_pool_size=(2, 2),
                         dropout1_p=0.1,  # !
                         conv2_num_filters=32, conv2_filter_size=(2, 2), pool2_pool_size=(2, 2),
@@ -78,7 +79,7 @@ class NetGenerator(object):
                         hidden4_num_units=1000,
                         dropout4_p=0.5,  # !
                         hidden5_num_units=1000,
-                        output_num_units=len(set(y)), output_nonlinearity=lasagne.nonlinearities.softmax,
+                        output_num_units=output_size, output_nonlinearity=lasagne.nonlinearities.softmax,
                         objective=regularization_objective,
                         objective_lambda2=0.0025,
                         update=lasagne.updates.adam,
@@ -94,7 +95,7 @@ class NetGenerator(object):
         elif net_type == "astronet2":
 
             layers2 = [
-                (InputLayer, {'shape': (None, X.shape[1], X.shape[2], X.shape[3])}),
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
             
                 (Conv2DLayer, {'num_filters': 16, 'filter_size': (3, 3), 'pad': 0}),
                 (MaxPool2DLayer, {'pool_size': (2, 2)}),
@@ -112,7 +113,7 @@ class NetGenerator(object):
                 (DropoutLayer, {'p':0.5}),
                 (DenseLayer, {'num_units': 1000}),
             
-                (DenseLayer, {'num_units': len(set(y)), 'nonlinearity': softmax}),
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': softmax}),
             ]
 
             net = NeuralNet(
@@ -132,7 +133,7 @@ class NetGenerator(object):
         elif net_type == "astronet3":
 
             layers3 = [
-                (InputLayer, {'shape': (None, X.shape[1], X.shape[2], X.shape[3])}),
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
             
                 (Conv2DLayer, {'num_filters': 32, 'filter_size': (3, 3), 'pad': 0}),
                 (Conv2DLayer, {'num_filters': 32, 'filter_size': (3, 3), 'pad': 0}),
@@ -152,7 +153,7 @@ class NetGenerator(object):
                 (DropoutLayer, {'p':0.5}),
                 (DenseLayer, {'num_units': 64}),
             
-                (DenseLayer, {'num_units': len(set(y)), 'nonlinearity': softmax}),
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': softmax}),
             ]
 
             net = NeuralNet(
@@ -172,7 +173,7 @@ class NetGenerator(object):
         elif net_type == "astronet4":
 
             layers4 = [
-                (InputLayer, {'shape': (None, X.shape[1], X.shape[2], X.shape[3])}),
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
             
                 (Conv2DLayer, {'num_filters': 8, 'filter_size': (3, 3), 'pad': 0}),
                 (Conv2DLayer, {'num_filters': 16, 'filter_size': (3, 3), 'pad': 0}),
@@ -186,7 +187,7 @@ class NetGenerator(object):
                 (DropoutLayer, {'p':0.5}),
                 (DenseLayer, {'num_units': 128}),
             
-                (DenseLayer, {'num_units': len(set(y)), 'nonlinearity': softmax}),
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': softmax}),
             ]
 
             net = NeuralNet(
@@ -206,7 +207,7 @@ class NetGenerator(object):
         elif net_type == "astronet5":
 
             layers5 = [
-                (InputLayer, {'shape': (None, X.shape[1], X.shape[2], X.shape[3])}),
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
             
                 (Conv2DLayer, {'num_filters': 64, 'filter_size': (3, 3), 'pad': 0}),
                 (MaxPool2DLayer, {'pool_size': (2, 2)}),
@@ -224,7 +225,7 @@ class NetGenerator(object):
                 (DropoutLayer, {'p':0.5}),
                 (DenseLayer, {'num_units': 128}),
             
-                (DenseLayer, {'num_units': len(set(y)), 'nonlinearity': softmax}),
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': softmax}),
             ]
 
             net = NeuralNet(
@@ -244,7 +245,7 @@ class NetGenerator(object):
         elif net_type == "astronet6":
 
             layers6 = [
-                (InputLayer, {'shape': (None, X.shape[1], X.shape[2], X.shape[3])}),
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
             
                 (Conv2DLayer, {'num_filters': 32, 'filter_size': (3, 3), 'pad': 0}),
                 (MaxPool2DLayer, {'pool_size': (2, 2)}),
@@ -258,7 +259,7 @@ class NetGenerator(object):
                 (DropoutLayer, {'p':0.5}),
                 (DenseLayer, {'num_units': 512}),
             
-                (DenseLayer, {'num_units': len(set(y)), 'nonlinearity': softmax}),
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': softmax}),
             ]
 
             net = NeuralNet(
@@ -278,7 +279,7 @@ class NetGenerator(object):
         elif net_type == "astronet7_128_256":
 
             layers7 = [
-                (InputLayer, {'shape': (None, X.shape[1], X.shape[2], X.shape[3])}),
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
             
                 (Conv2DLayer, {'num_filters': 128, 'filter_size': (3, 3), 'pad': 0}),
                 (MaxPool2DLayer, {'pool_size': (2, 2)}),
@@ -288,7 +289,7 @@ class NetGenerator(object):
                 (DropoutLayer, {'p':0.5}),
                 (DenseLayer, {'num_units': 256}),
             
-                (DenseLayer, {'num_units': len(set(y)), 'nonlinearity': softmax}),
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': softmax}),
             ]
 
             net = NeuralNet(
@@ -308,7 +309,7 @@ class NetGenerator(object):
         elif net_type == "astronet7_64_128":
 
             layers7 = [
-                (InputLayer, {'shape': (None, X.shape[1], X.shape[2], X.shape[3])}),
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
             
                 (Conv2DLayer, {'num_filters': 64, 'filter_size': (3, 3), 'pad': 0}),
                 (MaxPool2DLayer, {'pool_size': (2, 2)}),
@@ -318,7 +319,7 @@ class NetGenerator(object):
                 (DropoutLayer, {'p':0.5}),
                 (DenseLayer, {'num_units': 128}),
             
-                (DenseLayer, {'num_units': len(set(y)), 'nonlinearity': softmax}),
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': softmax}),
             ]
 
             net = NeuralNet(
@@ -338,7 +339,7 @@ class NetGenerator(object):
         elif net_type == "astronet7_32_64":
 
             layers7 = [
-                (InputLayer, {'shape': (None, X.shape[1], X.shape[2], X.shape[3])}),
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
             
                 (Conv2DLayer, {'num_filters': 32, 'filter_size': (3, 3), 'pad': 0}),
                 (MaxPool2DLayer, {'pool_size': (2, 2)}),
@@ -348,7 +349,7 @@ class NetGenerator(object):
                 (DropoutLayer, {'p':0.5}),
                 (DenseLayer, {'num_units': 64}),
             
-                (DenseLayer, {'num_units': len(set(y)), 'nonlinearity': softmax}),
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': softmax}),
             ]
 
             net = NeuralNet(
@@ -363,7 +364,38 @@ class NetGenerator(object):
                 verbose=verbose,
             )     
             
-            return net                        
+            return net            
+
+        elif net_type == "galaxyzoo_small":
+
+            layers7 = [
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
+            
+                (Conv2DLayer, {'num_filters': 32, 'filter_size': (3, 3), 'pad': 0}),
+                (MaxPool2DLayer, {'pool_size': (2, 2)}),
+                (DropoutLayer, {'p':0.1}),
+                                            
+                (DenseLayer, {'num_units': 64}),
+                (DropoutLayer, {'p':0.5}),
+                (DenseLayer, {'num_units': 64}),
+            
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': None}),
+            ]
+
+            net = NeuralNet(
+                layers=layers7,
+                max_epochs=epochs,
+                regression=regression,
+                update=lasagne.updates.adam,
+                update_learning_rate=learning_rate,
+                objective_l2=0.0025,
+                batch_iterator_train=batch_iterator_train,
+                batch_iterator_test =batch_iterator_test,
+                train_split=TrainSplit(eval_size=0.05),
+                verbose=verbose,
+            )     
+            
+            return net                 
                                 
         else:
             raise Exception("Unknown network type: %s" % str(net_type))

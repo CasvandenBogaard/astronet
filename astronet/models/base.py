@@ -16,7 +16,7 @@ from nolearn.lasagne import BatchIterator
 from lasagne.layers import Conv2DLayer
         
 from astronet.util import ensure_dir, start_via_single_process
-from .input import InputHandler, AugmentationBatchIterator
+from .input import AugmentationBatchIterator
 from .net import NetGenerator
 
 
@@ -55,6 +55,9 @@ class AstroNet(object):
     
     def __init__(self,
                  net_type="astronet1",
+                 input_shape=(3,50,50),
+                 output_size=2,
+                 regression=False,
                  epochs=500,
                  learning_rate=0.0002,
                  batch_size=128,
@@ -66,6 +69,9 @@ class AstroNet(object):
                  ):
         
         self.net_type = net_type
+        self.input_shape = input_shape
+        self.output_size = output_size
+        self.regression = regression
         self.epochs = epochs
         self.learning_rate = learning_rate
         self.batch_size = batch_size
@@ -74,6 +80,22 @@ class AstroNet(object):
         self.transforms = transforms
         self.seed = seed
         self.verbose = verbose
+
+        self._network_generator = NetGenerator()
+
+        self.ABI = AugmentationBatchIterator(self.batch_size, balanced=self.balanced, augments=self.augments+self.transforms)
+        self.ABI_test = AugmentationBatchIterator(self.batch_size, augments=self.transforms)
+
+        self.model = self._network_generator.get_instance(self.net_type, 
+                                                          self.input_shape,
+                                                          self.output_size,
+                                                          regression=self.regression,
+                                                          epochs=self.epochs, 
+                                                          learning_rate=self.learning_rate, 
+                                                          verbose=self.verbose,
+                                                          batch_iterator_train=self.ABI,
+                                                          batch_iterator_test=self.ABI_test,
+                                                          )
 
     def get_params(self, deep=True):
         
@@ -106,41 +128,16 @@ class AstroNet(object):
         XF_train : array-like or None, default None
             Optional: Array of training patterns (features)            
         """
-
-        self._input_handler = InputHandler(seed=self.seed, verbose=self.verbose)
-        self._network_generator = NetGenerator()
         
-        XI_train = copy.deepcopy(XI_train)
-        y_train = copy.deepcopy(y_train)
+        X = copy.deepcopy(XI_train)
+        y = copy.deepcopy(y_train)
         XF_train = copy.deepcopy(XF_train)
         
         if self.verbose > 0:
             print("\nNumber of samples used to train network: %i" % len(XI_train))
-            counts = np.bincount(y_train.astype(np.int64))
-            for i in xrange(len(counts)):
-                if counts[i] > 0:
-                    print("-> Number of examples for class %i: %i" % (i, counts[i]))
             print("")
 
-                    
-
-        # transform images and patterns
-        XI_train, XF_train = self._transform_patterns(XI_train, XF=XF_train, fit=True)
-
-        self.ABI = AugmentationBatchIterator(XF_train, self.batch_size, balanced=self.balanced, augments=self.augments)
-        self.ABI_test = AugmentationBatchIterator(None, self.batch_size, augments=self.transforms)
-        
-        X = XI_train.astype(np.float32)
-        y = y_train.astype(np.int32)
-                
-        self.model = self._network_generator.get_instance(X, y, self.net_type, 
-                                                          epochs=self.epochs, 
-                                                          learning_rate=self.learning_rate, 
-                                                          verbose=self.verbose,
-                                                          batch_iterator_train=self.ABI,
-                                                          #batch_iterator_test=self.ABI_test,
-                                                          )
-        
+        self.ABI.features = XF_train
 
         # fit final model
         self.model.fit(X, y)
@@ -163,14 +160,10 @@ class AstroNet(object):
             The predictions computed by the model
         """
         
-        X, XF = copy.deepcopy(X), copy.deepcopy(XF)
-        
-        # transform images/patterns
-        #if self.ABI_test == None:
-        X, XF = self._transform_patterns(X, XF=XF, fit=False)
+        X = copy.deepcopy(X)
         
         # compute predictions
-        preds = self.model.predict(X.astype(np.float32))
+        preds = self.model.predict(X)
           
         return preds
     
@@ -190,42 +183,15 @@ class AstroNet(object):
             The predictions computed by the model
         """
         
-        X, XF = copy.deepcopy(X), copy.deepcopy(XF)
-        
-        # transform images/patterns
-        X, XF = self._transform_patterns(X, XF=XF, fit=False)
+        X = copy.deepcopy(X)
         
         # compute predictions
-        preds_probs = self.model.predict_proba(X.astype(np.float32))
+        preds_probs = self.model.predict_proba(X)
           
         return preds_probs
 
-    def _augment_data(self, X, XF, y):
-        
-        for i in xrange(len(self.augments)):
-            
-            method = self.augments[i][0]
-            params = self.augments[i][1]
-            
-            X, XF, y = self._input_handler.apply(X, XF, y, method=method, params=params)
-        
-        return X, XF, y
-    
-    def _transform_patterns(self, X, XF=None, fit=False):
-        """
-        """
-        
-        for i in xrange(len(self.transforms)):
-            
-            method = self.transforms[i][0]
-            params = copy.deepcopy(self.transforms[i][1])
-            
-            assert "fit" not in params.keys()
-            params["fit"] = fit
-        
-            X, XF, _ = self._input_handler.apply(X, XF, None, method=method, params=params)
-            
-        return X, XF
+    def add_augment(self, method, args):
+        self.ABI.add_augment(method, args)
 
     def save_weights(self, odir, ofname):
         self.model.save_params_to(os.path.join(odir,ofname))
@@ -242,7 +208,6 @@ class AstroNet(object):
         #np.savez(ofname, *lasagne.layers.get_all_param_values(self.model.layers_))
     
     def save_details(self, odir, figsize=(10,10)):
-        
         #start_via_single_process(AstroNet._save_details, [odir, self.model], {'figsize':figsize})
         self._save_details(odir, self.model, figsize=figsize)
     
@@ -254,13 +219,3 @@ class AstroNet(object):
         plt = plot_loss(model)
         plt.savefig(os.path.join(odir, "loss.png"))
         plt.close()
-        plt.close()
-                
-        for i in xrange(len(model.layers_)):
-            name = model.layers_[i].name
-            layer = model.layers_[name]
-            if type(layer) == lasagne.layers.Conv2DLayer:
-                plt = plot_conv_weights(layer, figsize=figsize)
-                plt.savefig(os.path.join(odir, "layer_%s.png" % str(name)))
-                plt.close()
-                plt.close()

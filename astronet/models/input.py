@@ -4,19 +4,21 @@ Created on 01.06.2016
 @authors: jonaskindler and fgieseke
 '''
 
+import sys, os
 import copy
 import numpy as np
 import scipy.ndimage.interpolation
 from scipy.ndimage.interpolation import shift
+from scipy.ndimage.filters import gaussian_filter
 from skimage.transform import rescale
+import skimage.io as io
 from nolearn.lasagne import BatchIterator
 
-from .zca import ZCA
 
 import matplotlib.pyplot as plt
 
 class AugmentationBatchIterator(BatchIterator):
-    def __init__(self, features, batch_size, augments=[], balanced=False, seed=0, verbose=1):
+    def __init__(self, batch_size, augments=[], balanced=False, seed=0, verbose=1):
         super(AugmentationBatchIterator, self).__init__(batch_size, shuffle=True, seed=seed)
 
         self._methods = {
@@ -30,14 +32,15 @@ class AugmentationBatchIterator(BatchIterator):
             "zoom_in":AugmentationBatchIterator.zoom_in,
             "add_const":AugmentationBatchIterator.add_const,
             "add_noise":AugmentationBatchIterator.add_noise,
+            "edge_error":AugmentationBatchIterator.edge_error,
+            "add_star":AugmentationBatchIterator.add_star,
             "submean":AugmentationBatchIterator.submean,
             "submean_per_image":AugmentationBatchIterator.submean_per_image,
-            "whitening":AugmentationBatchIterator.whitening,
         }
 
-        self.features = features
-        self.augments = augments
+        self.features = []
 
+        self.augments = augments
         self.balanced = balanced
 
         self._methods_cache = {}        
@@ -45,17 +48,25 @@ class AugmentationBatchIterator(BatchIterator):
         self.seed = seed
         
         np.random.seed(self.seed)
-        if self.verbose > 0:
-            print("\n---------------------------------------")
-            print("---------- DATA AUGMENTATION ----------")
-            print("---------------------------------------")
-            for aug in augments:
-                print("-> Applying method '%s': " % (str(aug)) )
+
+    def add_augment(self, method, args):
+        self.augments.append( (method, args) )
 
     def transform(self, Xb, yb):
         X = copy.deepcopy(Xb)
         y = copy.deepcopy(yb)
         Xf = copy.deepcopy(self.features)
+
+        if isinstance(X[0], str):
+            # Input is list of filenames
+            images = np.array( [io.imread(os.path.join(X[0]))] )
+            for i in range(1,len(X)):
+                im = np.array( [io.imread(os.path.join(X[i]))] )
+                images = np.vstack((images, im))
+
+            images = images.transpose(0,3,1,2)
+            X = images
+
 
         if self.balanced:
             pos_ind = np.argwhere(y>0).ravel()
@@ -76,6 +87,10 @@ class AugmentationBatchIterator(BatchIterator):
         for aug in self.augments:
             X, y, Xf = self._methods[aug[0]](self, X, y, Xf, args=aug[1], verbose=self.verbose)
         
+        X = X.astype(np.float32)
+        if y is not None:
+            y = y.astype(np.float32)
+
         return X, y
         
     def crop_images(self, X, Y, features, args={}, verbose=0):
@@ -98,12 +113,15 @@ class AugmentationBatchIterator(BatchIterator):
     
     def shift_images(self, X, Y, features, args={}, verbose=0):
         
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else set(Y)
+        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
 
         xrang = args['xrange'] if 'xrange' in args else [2,4]
         yrang = args['yrange'] if 'yrange' in args else [2,4]
 
-        mask = np.in1d(Y, list(selected_classes))
+        if selected_classes is not None:
+            mask = np.in1d(Y, list(selected_classes))
+        else:
+            mask = np.ones(len(Y))
         shift_x = np.random.randint(len(xrang), size=len(Y))
         shift_y = np.random.randint(len(yrang), size=len(Y))
 
@@ -117,9 +135,13 @@ class AugmentationBatchIterator(BatchIterator):
     
     def rotate_images(self, X, Y, features, args={}, verbose=0):
         rotations = args['rotations'] if 'rotations' in args else [0,90,180,270]
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else set(Y)
+        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
 
-        mask = np.in1d(Y, list(selected_classes))
+
+        if selected_classes is not None:
+            mask = np.in1d(Y, list(selected_classes))
+        else:
+            mask = np.ones(len(Y))
         rotate = np.random.randint(len(rotations), size=len(Y))
         
         for (i,rot) in enumerate(mask):
@@ -149,10 +171,14 @@ class AugmentationBatchIterator(BatchIterator):
     
     def fliplr(self, X, Y, features, args={}, verbose=0):
         
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else set(Y)
+        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
         prob = args['prob'] if 'prob' in args else 0.5
 
-        mask = np.in1d(Y, list(selected_classes))
+
+        if selected_classes is not None:
+            mask = np.in1d(Y, list(selected_classes))
+        else:
+            mask = np.ones(len(Y))
         flips = np.random.rand(len(mask))
         flips = flips<prob
         mask = np.logical_and(mask,flips)
@@ -165,10 +191,13 @@ class AugmentationBatchIterator(BatchIterator):
 
     def flipud(self, X, Y, features, args={}, verbose=0):
 
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else set(Y)
+        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
         prob = args['prob'] if 'prob' in args else 0.5
 
-        mask = np.in1d(Y, list(selected_classes))
+        if selected_classes is not None:
+            mask = np.in1d(Y, list(selected_classes))
+        else:
+            mask = np.ones(len(Y))
         flips = np.random.rand(len(mask))
         flips = flips<prob
         mask = np.logical_and(mask,flips)
@@ -180,10 +209,13 @@ class AugmentationBatchIterator(BatchIterator):
         return X, Y, features
 
     def zoom_in(self, X, Y, features, args={}, verbose=0):
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else set(Y) 
+        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
         factor = args['factor'] if 'factor' in args else [1.0, 1.1]
 
-        mask = np.in1d(Y, list(selected_classes))
+        if selected_classes is not None:
+            mask = np.in1d(Y, list(selected_classes))
+        else:
+            mask = np.ones(len(Y))
         zooms = np.random.randint(len(factor), size=len(Y))
 
         imshape = (X.shape[2], X.shape[3])
@@ -221,6 +253,79 @@ class AugmentationBatchIterator(BatchIterator):
         X += np.random.normal(scale=value, size=shape)
 
         return X, Y, features
+
+    def edge_error(self, X, Y, features, args={}, verbose=0):
+        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
+        prob = args['prob'] if 'prob' in args else 0.1
+
+        if selected_classes is not None:
+            mask = np.in1d(Y, list(selected_classes))
+        else:
+            mask = np.ones(len(Y))
+        add = np.random.random(len(Y)) < prob
+        
+        Xtransformed = copy.deepcopy(X)
+        for i in range(len(Xtransformed)):
+            if add[i]:
+                Xtransformed[i] = self._add_edge_error(Xtransformed[i])
+
+        return Xtransformed, Y, features
+
+    def _add_edge_error(self, im):
+        side = np.random.randint(4)
+        dim = np.random.randint(im.shape[0])
+        width = np.random.randint(int(im.shape[1]/2))
+        height = np.random.randint(int(im.shape[2]/2))
+        value = np.random.random()
+
+        if side == 0:
+            im[dim, :width, :] = value
+        if side == 1:
+            im[dim, :, :height] = value
+        if side == 2:
+            im[dim, im.shape[1]-width:, :] = value
+        if side == 3:
+            im[dim, :, im.shape[2]-height:] = value
+
+        return im
+
+    #NEEDS TO BE LOOKED AT
+    def add_star(self, X, Y, features, args={}, verbose=0):
+        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
+        prob = args['prob'] if 'prob' in args else 0.999
+        mean_range = args['L_range'] if 'L_range' in args else [11089999, 11090000]
+        var_range = args['var_range'] if 'var_range' in args else [2,10]
+
+        if selected_classes is not None:
+            mask = np.in1d(Y, list(selected_classes))
+        else:
+            mask = np.ones(len(Y))
+        add = np.random.random(len(Y)) < prob
+        
+        Xtransformed = copy.deepcopy(X)
+        for i in range(len(Xtransformed[:10])):
+            if add[i]:
+                Xtransformed[i,:] += self._add_star(Xtransformed[i], mean_range, var_range)
+                plt.imsave("test2.png", Xtransformed[i,0]) 
+                print Xtransformed[i,0,25,25]
+
+        return Xtransformed, Y, features
+
+    def _add_star(self, im, means_range, var_range):
+        shape = im.shape[1:]
+        x_c = np.random.randint(shape[0])
+        y_c = np.random.randint(shape[1])
+
+        mean, var = np.random.rand(2)
+        mean = means_range[0] + mean*(means_range[1]-means_range[0])
+        var = var_range[0] + var*(var_range[1]-var_range[0])
+
+        delta_im = np.zeros((2*shape[0]+1, 2*shape[1]+1))
+        delta_im[shape[0], shape[1]] = 1
+        to_add = gaussian_filter(delta_im, var)[shape[0]-x_c:2*shape[0]-x_c, shape[1]-y_c:2*shape[1]-y_c]
+        to_add = to_add*mean
+
+        return to_add.astype(np.float32)
 
     def submean(self, X, Y, features, args={}, verbose=0):
         
@@ -274,218 +379,3 @@ class AugmentationBatchIterator(BatchIterator):
                     Xtransformed[i,j,20:30,20:30] = X[i,j,20:30,20:30]
         
         return Xtransformed, Y, features    
-    
-    def whitening(self, X, Y, features, args={}, verbose=0):
-        """ Assuming X of shape [N, F, n, m], where N is
-        the number of instances, F the number of images per
-        instance, and nxm the size of each image.
-        """
-        
-        fit = args['fit'] if 'fit' in args else True
-        
-        if fit == True:
-            self._methods_cache["whitening"] = {}
-            for i in xrange(X.shape[1]):
-                whitening = ZCA()
-                whitening.fit(X[:,i,:,:].reshape((X[:,i,:,:].shape[0], -1)))
-                self._methods_cache["whitening"][i] = whitening
-        
-        Xtransformed = copy.deepcopy(X)
-        for i in xrange(X.shape[1]):
-            try:
-                whitening = self._methods_cache["whitening"][i]
-                tmp = whitening.transform(X[:,i,:,:].reshape((X[:,i,:,:].shape[0], -1)))
-                Xtransformed[:,i,:,:] = tmp.reshape(X[:,i,:,:].shape)
-            except Exception as e:
-                print("Could not applying 'whitening': %s" % str(e))
-
-#             Xsub = X[:,i,:,:]
-#             # generate N x (nm) array and center it
-#             Xnew = Xsub.reshape((Xsub.shape[0], -1))
-#             Xcentered = Xnew - np.mean(Xnew, axis=0)
-#             
-#             # whitening
-#             cov = np.dot(Xcentered.T, Xcentered)
-#             U, S, V = np.linalg.svd(cov)
-#             Xrot = np.dot(Xcentered, U)
-#             Xwhite = Xrot / np.sqrt(S + 1e-5)
-
-#             Xtransformed[:,i,:,:] = Xwhite.reshape(Xsub.shape)
-            
-        return Xtransformed, Y, features
-
-class InputHandler(object):
-        
-    def __init__(self, seed=0, verbose=0):
-        
-        self._methods = {
-            "select_dimensions":InputHandler.select_dimensions,
-            "crop_images":InputHandler.crop_images,
-            "shift_images":InputHandler.shift_images,
-            "rotate_images":InputHandler.rotate_images,
-            "fliplr":InputHandler.fliplr,
-            "flipud":InputHandler.flipud,
-        }
-
-        self._methods_cache = {}        
-        self.verbose = verbose
-        self.seed = seed
-        
-        np.random.seed(self.seed)
-                                    
-    def apply(self, X, XF, y, method=None, params={}):
-        
-        if not method in self._methods:
-                raise RuntimeError(str(method) + " is not a valid input_action!")
-        
-        if self.verbose > 0:
-            print("-> Applying method '%s' with parameters: %s" % (str(method), str(params)[:50] + "..."))
-            
-        X, y, XF = self._methods[method](self, X, y, XF, args=params, verbose=self.verbose)
-            
-        return X, XF, y
-
-    def select_dimensions(self, X, Y, features, args={}, verbose=0):
-        
-        dims = args['dimensions'] if 'dimensions' in args else None
-        
-        if dims is not None:
-            X = X[:, dims, :]
-
-        return X, Y, features    
-        
-    def crop_images(self, X, Y, features, args={}, verbose=0):
-        
-        crop_ranges = args['ranges'] if 'ranges' in args else None
-        
-        if crop_ranges is not None:
-            X = X[:, :, crop_ranges[0][0]:crop_ranges[0][1], crop_ranges[1][0]:crop_ranges[1][1]]
-
-        return X, Y, features
-    
-    def shift_images(self, X, Y, features, args={}, verbose=0):
-        
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else set(Y)
-
-        mask = np.in1d(Y, list(selected_classes))
-        if features is not None:
-            X_mask, Y_mask, features_mask = X[mask], Y[mask], features[mask]
-        else:
-            X_mask, Y_mask, features_mask = X[mask], Y[mask], None
-                    
-        xrang = args['xrange'] if 'xrange' in args else [2,4]
-        yrang = args['yrange'] if 'yrange' in args else [2,4]
-        
-        X_shifted = []
-        Y_shifted = []
-        features_shifted = []
-        
-        for x in xrang:
-            for y in yrang: 
-                images_shifted = self._shift_batch_images(X_mask, x, y)
-                X_shifted.append(images_shifted)
-                Y_shifted.append(Y_mask)
-                if features is not None:
-                    features_shifted.append(features_mask)
-                    
-        X_shifted.append(X)
-        Y_shifted.append(Y)
-        if features is not None:  
-            features_shifted.append(features)
-            
-        Xnew = np.concatenate(X_shifted, axis=0)
-        Ynew = np.concatenate(Y_shifted, axis=0)
-        
-        if features is not None:
-            featuresnew = np.concatenate(features_shifted, axis=0)
-        else:
-            featuresnew = None                
-        
-        return Xnew, Ynew, featuresnew
-                                    
-    def _shift_batch_images(self, X, x, y):
-        
-        Xnew = copy.deepcopy(X)
-        for i in xrange(X.shape[0]):
-            for j in xrange(X.shape[1]):
-                Xnew[i,j,:,:] = shift(X[i,j,:,:], [x,y], output=X.dtype)
-                
-        return Xnew
-    
-    def rotate_images(self, X, Y, features, args={}, verbose=0):
-        
-        rotations = args['rotations'] if 'rotations' in args else range(5, 361, 60)
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else set(Y)
-        
-        mask = np.in1d(Y, list(selected_classes))
-        if features is not None:
-            X_mask, Y_mask, features_mask = X[mask], Y[mask], features[mask]
-        else:
-            X_mask, Y_mask, features_mask = X[mask], Y[mask], None
-         
-        X_rotated = []
-        Y_rotated = []
-        features_rotated = []
-        
-        for i in range(len(rotations)):
-            rot_imgs = scipy.ndimage.interpolation.rotate(X_mask, rotations[i], axes=(2, 3), reshape=False)
-            X_rotated.append(rot_imgs)
-            Y_rotated.append(Y_mask)
-            if features is not None:
-                features_rotated.append(features_mask)
-
-        X_rotated.append(X)
-        Y_rotated.append(Y)
-        if features is not None:  
-            features_rotated.append(features)
-                  
-        # combine all rotated images to single array and
-        # generate both extended labels and features
-        newX = np.concatenate(X_rotated, axis=0)
-        newY = np.concatenate(Y_rotated, axis=0)
-        if features is not None:
-            newFeatures = np.concatenate(features_rotated, axis=0)
-        else:
-            newFeatures = None
-
-        return newX, newY, newFeatures                 
-    
-    def fliplr(self, X, Y, features, args={}, verbose=0):
-        
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else set(Y)
-
-        mask = np.in1d(Y, list(selected_classes))
-        if features is not None:
-            X_mask, Y_mask, features_mask = X[mask], Y[mask], features[mask]
-        else:
-            X_mask, Y_mask, features_mask = X[mask], Y[mask], None
-                    
-        retX = np.concatenate([X_mask[:, :, :, ::-1], X], axis=0)
-        retY = np.concatenate([Y_mask, Y], axis=0)
-        
-        if features is not None:
-            retFeatures = np.concatenate([features_mask, features], axis=0)
-        else:
-            retFeatures = None
-    
-        return retX, retY, retFeatures
-
-    def flipud(self, X, Y, features, args={}, verbose=0):
-
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else set(Y)
-
-        mask = np.in1d(Y, list(selected_classes))
-        if features is not None:
-            X_mask, Y_mask, features_mask = X[mask], Y[mask], features[mask]
-        else:
-            X_mask, Y_mask, features_mask = X[mask], Y[mask], None
-                    
-        retX = np.concatenate([X_mask[:, :, ::-1, :], X], axis=0)
-        retY = np.concatenate([Y_mask, Y], axis=0)
-        
-        if features is not None:
-            retFeatures = np.concatenate([features_mask, features], axis=0)
-        else:
-            retFeatures = None
-    
-        return retX, retY, retFeatures

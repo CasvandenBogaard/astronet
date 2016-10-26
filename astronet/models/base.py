@@ -12,15 +12,13 @@ import lasagne
 from nolearn.lasagne.visualize import draw_to_file
 from nolearn.lasagne.visualize import plot_loss
 from nolearn.lasagne.visualize import plot_conv_weights
-from nolearn.lasagne import BatchIterator
 from lasagne.layers import Conv2DLayer
         
 from astronet.util import ensure_dir, start_via_single_process
 from .input import AugmentationBatchIterator
-from .net import NetGenerator
 
 
-class AstroNet(object):
+class AstroWrapper(object):
     """ Deep net for supernova classification.
     
     Parameters
@@ -53,13 +51,8 @@ class AstroNet(object):
         Verbosity level                   
     """
     
-    def __init__(self,
-                 net_type="astronet1",
-                 input_shape=(3,50,50),
-                 output_size=2,
+    def __init__(self, net,
                  regression=False,
-                 epochs=500,
-                 learning_rate=0.0002,
                  batch_size=128,
                  balanced=False,
                  augments=[],
@@ -68,12 +61,8 @@ class AstroNet(object):
                  verbose=1,
                  ):
         
-        self.net_type = net_type
-        self.input_shape = input_shape
-        self.output_size = output_size
+        self.net = net
         self.regression = regression
-        self.epochs = epochs
-        self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.balanced = balanced
         self.augments = augments
@@ -81,21 +70,11 @@ class AstroNet(object):
         self.seed = seed
         self.verbose = verbose
 
-        self._network_generator = NetGenerator()
-
         self.ABI = AugmentationBatchIterator(self.batch_size, balanced=self.balanced, augments=self.augments+self.transforms)
         self.ABI_test = AugmentationBatchIterator(self.batch_size, augments=self.transforms)
 
-        self.model = self._network_generator.get_instance(self.net_type, 
-                                                          self.input_shape,
-                                                          self.output_size,
-                                                          regression=self.regression,
-                                                          epochs=self.epochs, 
-                                                          learning_rate=self.learning_rate, 
-                                                          verbose=self.verbose,
-                                                          batch_iterator_train=self.ABI,
-                                                          batch_iterator_test=self.ABI_test,
-                                                          )
+        self.net.batch_iterator_train = self.ABI
+        self.net.batch_iterator_test = self.ABI_test
 
     def get_params(self, deep=True):
         
@@ -139,8 +118,7 @@ class AstroNet(object):
 
         self.ABI.features = XF_train
 
-        # fit final model
-        self.model.fit(X, y)
+        self.net.fit(X, y)
         
         return self
 
@@ -163,7 +141,7 @@ class AstroNet(object):
         X = copy.deepcopy(X)
         
         # compute predictions
-        preds = self.model.predict(X)
+        preds = self.net.predict(X)
           
         return preds
     
@@ -186,7 +164,7 @@ class AstroNet(object):
         X = copy.deepcopy(X)
         
         # compute predictions
-        preds_probs = self.model.predict_proba(X)
+        preds_probs = self.net.predict_proba(X)
           
         return preds_probs
 
@@ -194,28 +172,28 @@ class AstroNet(object):
         self.ABI.add_augment(method, args)
 
     def save_weights(self, odir, ofname):
-        self.model.save_params_to(os.path.join(odir,ofname))
+        self.net.save_params_to(os.path.join(odir,ofname))
 
     def load_weights(self, fname):
         if not hasattr(self, 'model'):
             print "Initialization of model incomplete!"
         else:
-            self.model.load_params_from(fname)
+            self.net.load_params_from(fname)
     
     #def save_model(self, ofname):
         
         #ensure_dir(ofname)
-        #np.savez(ofname, *lasagne.layers.get_all_param_values(self.model.layers_))
+        #np.savez(ofname, *lasagne.layers.get_all_param_values(self.net.layers_))
     
     def save_details(self, odir, figsize=(10,10)):
-        #start_via_single_process(AstroNet._save_details, [odir, self.model], {'figsize':figsize})
-        self._save_details(odir, self.model, figsize=figsize)
-    
+        #start_via_single_process(AstroNet._save_details, [odir, self.net], {'figsize':figsize})
+        self._save_details(odir, self.net, figsize=figsize)
+
     @staticmethod
-    def _save_details(odir, model, figsize=(10,10)):
+    def _save_details(odir, net, figsize=(10,10)):
         ensure_dir(os.path.join(odir, "layers.png")) 
-        draw_to_file(model.layers, os.path.join(odir, "layers.png"), output_shape=False)
+        draw_to_file(net.layers, os.path.join(odir, "layers.png"), output_shape=False)
         
-        plt = plot_loss(model)
+        plt = plot_loss(net)
         plt.savefig(os.path.join(odir, "loss.png"))
         plt.close()

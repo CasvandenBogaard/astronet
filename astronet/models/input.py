@@ -18,7 +18,7 @@ from nolearn.lasagne import BatchIterator
 import matplotlib.pyplot as plt
 
 class AugmentationBatchIterator(BatchIterator):
-    def __init__(self, batch_size, augments=[], balanced=False, seed=0, verbose=1):
+    def __init__(self, batch_size, augments=[], balanced=False, regression=False, seed=0, verbose=1):
         super(AugmentationBatchIterator, self).__init__(batch_size, shuffle=True, seed=seed)
 
         self._methods = {
@@ -34,6 +34,7 @@ class AugmentationBatchIterator(BatchIterator):
             "add_noise":AugmentationBatchIterator.add_noise,
             "edge_error":AugmentationBatchIterator.edge_error,
             "add_star":AugmentationBatchIterator.add_star,
+            "add_dead_column":AugmentationBatchIterator.add_dead_column,
             "submean":AugmentationBatchIterator.submean,
             "submean_per_image":AugmentationBatchIterator.submean_per_image,
         }
@@ -42,6 +43,7 @@ class AugmentationBatchIterator(BatchIterator):
 
         self.augments = augments
         self.balanced = balanced
+        self.regression = regression
 
         self._methods_cache = {}        
         self.verbose = verbose
@@ -89,7 +91,10 @@ class AugmentationBatchIterator(BatchIterator):
         
         X = X.astype(np.float32)
         if y is not None:
-            y = y.astype(np.float32)
+            if self.regression:
+                y = y.astype(np.float32)
+            else:
+                y = y.astype(np.int32)
 
         return X, y
         
@@ -289,12 +294,31 @@ class AugmentationBatchIterator(BatchIterator):
 
         return im
 
+    def add_dead_column(self, X, Y, features, args={}, verbose=0):
+        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
+        prob = args['prob'] if 'prob' in args else 0.1
+
+        if selected_classes is not None:
+            mask = np.in1d(Y, list(selected_classes))
+        else:
+            mask = np.ones(len(Y))
+        add = np.random.random((X.shape[1],len(Y))) < prob
+
+        Xtransformed = copy.deepcopy(X)
+        for i in range(len(Xtransformed)):
+            for col in range(X.shape[1]):
+                if add[col,i]:
+                    col_i = np.random.randint(X.shape[2])
+                    Xtransformed[i,col,:,col_i] = 0
+
+        return Xtransformed, Y, features
+
     #NEEDS TO BE LOOKED AT
     def add_star(self, X, Y, features, args={}, verbose=0):
         selected_classes = args['selected_classes'] if 'selected_classes' in args else None
         prob = args['prob'] if 'prob' in args else 0.999
-        mean_range = args['L_range'] if 'L_range' in args else [11089999, 11090000]
-        var_range = args['var_range'] if 'var_range' in args else [2,10]
+        mean_range = args['L_range'] if 'L_range' in args else [90000, 100000]
+        var_range = args['var_range'] if 'var_range' in args else [2,6]
 
         if selected_classes is not None:
             mask = np.in1d(Y, list(selected_classes))
@@ -303,11 +327,9 @@ class AugmentationBatchIterator(BatchIterator):
         add = np.random.random(len(Y)) < prob
         
         Xtransformed = copy.deepcopy(X)
-        for i in range(len(Xtransformed[:10])):
+        for i in range(len(Xtransformed)):
             if add[i]:
                 Xtransformed[i,:] += self._add_star(Xtransformed[i], mean_range, var_range)
-                plt.imsave("test2.png", Xtransformed[i,0]) 
-                print Xtransformed[i,0,25,25]
 
         return Xtransformed, Y, features
 

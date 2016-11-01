@@ -6,4 +6,4 @@ Created on 29.05.2016
 
 from .base import AstroWrapper
 from .net import AstroNet
-from .ensemble import VotingClassifier
+from .input import AugmentationBatchIterator

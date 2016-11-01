@@ -5,7 +5,7 @@ Created on 10.08.2016
 '''
 import numpy as np
 import lasagne
-from nolearn.lasagne import NeuralNet, objective, TrainSplit, BatchIterator
+from nolearn.lasagne import NeuralNet, objective, TrainSplit
 
 from lasagne.nonlinearities import softmax
 from lasagne.layers import InputLayer
@@ -38,6 +38,36 @@ def regularization_objective(layers, lambda1=0., lambda2=0., *args, **kwargs):
                          
 
 class AstroNet(NeuralNet):
+    """Class that extends the nolearn NeuralNet class.
+    Provides a simple way of loading a pre-defined
+    network architecture for use with AstroWrapper.
+        
+    Parameters
+    ----------
+
+    net_type : string
+        Name of the pre-defined network to be created.
+    input_shape : tuple or list
+        Shape of the input of the form
+        (depth, width, height).
+    output_size : integer
+        Number of output nodes. Should be equal to the
+        number of classes to predict.
+    regression : boolean, default False
+        Should be set to True when the labels are real
+        values (regression) instead of distinct classes
+        (classification).
+    epochs : integer, default 100
+        Number of times all input patterns are fed to
+        the network during training.
+    learning_rate : float, default 0.0002
+        Parameter governing the speed of learning of 
+        the network. Careful tuning is often necessary
+        to reach a good performance. Value >0.
+    verbose : integer, default 0
+        Verbosity level.
+    """
+
     def __init__(self, net_type, input_shape, output_size,
                      regression=False,
                      epochs=100, 
@@ -58,6 +88,24 @@ class AstroNet(NeuralNet):
              
 
     def get_layers(self, net_type, shape, output_size):
+        """ Method to select a pre-defined architecture.
+            
+        Parameters
+        ----------
+        net_type : string
+            Name of the pre-defined network to be created.
+        shape : tuple or list
+            Shape of the input of the form
+            (depth, width, height).
+        output_size : integer
+            Number of output nodes. Should be equal to the
+            number of classes to predict.
+
+        Returns
+        -------
+        layers : list
+            The architecture of the selected pre-defined network.
+        """
         if net_type == "ShallowNet":
             layers = [
                 (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),

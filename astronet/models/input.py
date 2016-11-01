@@ -1,14 +1,13 @@
 '''
 Created on 01.06.2016
 
-@authors: jonaskindler and fgieseke
+@authors: Jonas Kindler, Fabian Gieseke, Cas van den Bogaard
 '''
 
 import sys, os
 import copy
 import numpy as np
-import scipy.ndimage.interpolation
-from scipy.ndimage.interpolation import shift
+from scipy.ndimage.interpolation import shift, rotate
 from scipy.ndimage.filters import gaussian_filter
 from skimage.transform import rescale
 import skimage.io as io
@@ -17,12 +16,41 @@ from nolearn.lasagne import BatchIterator
 
 import matplotlib.pyplot as plt
 
+# TO DO:
+# Some more rigorous testing of augmentations
 class AugmentationBatchIterator(BatchIterator):
+    """Class that handles data augmentation and batch processing.
+        
+    Parameters
+    ----------
+
+    batch_size : integer
+        Number of input patterns per batch.
+    augments : list, default []
+        Augmentation steps that shall be applied
+        to the data in each batch. The ordering does matter. 
+        Each element is a tuple with two elements, where the 
+        first element is a string specifying the method and 
+        the second is a dictionary with the parameters for the 
+        augmentation method. 
+    balanced: boolean, default False
+        If set to True, will force each batch to contain 
+        an equal amount of samples from each class. Only
+        works for binary classification problems.
+    regression: boolean, default False
+        Should be set to True when the labels are real
+        values (regression) instead of distinct classes
+        (classification).
+    seed: integer, default 0
+        Integer to seed the random number generator.
+    verbose: integer, default 0
+        Specifies verbosity of the model.
+    """
+
     def __init__(self, batch_size, augments=[], balanced=False, regression=False, seed=0, verbose=1):
         super(AugmentationBatchIterator, self).__init__(batch_size, shuffle=True, seed=seed)
 
         self._methods = {
-            "extend":AugmentationBatchIterator.extend_data,
             "crop_images":AugmentationBatchIterator.crop_images,
             "select_dimensions":AugmentationBatchIterator.select_dimensions,
             "shift_images":AugmentationBatchIterator.shift_images,
@@ -35,8 +63,7 @@ class AugmentationBatchIterator(BatchIterator):
             "edge_error":AugmentationBatchIterator.edge_error,
             "add_star":AugmentationBatchIterator.add_star,
             "add_dead_column":AugmentationBatchIterator.add_dead_column,
-            "submean":AugmentationBatchIterator.submean,
-            "submean_per_image":AugmentationBatchIterator.submean_per_image,
+            "normalize":AugmentationBatchIterator.normalize,
         }
 
         self.features = []
@@ -52,9 +79,44 @@ class AugmentationBatchIterator(BatchIterator):
         np.random.seed(self.seed)
 
     def add_augment(self, method, args):
+        """Method to add augmentation steps after initialization
+        of the AugmentationBatchIterator.
+            
+        Parameters
+        ----------
+        method : string
+            Name of the augmentation that should be added.
+            Should be key in self._methods
+        augments : dictionary, default {}
+            Parameters for augmentation that is to be added. 
+            Should be given in the form {'k1':v1, 'k2':v2}.
+        """
         self.augments.append( (method, args) )
 
+    # TO DO:
+    # Look at balancing for multiple classes
     def transform(self, Xb, yb):
+        """Load the data if input of filenames, then applies
+        balancing and augmentations to the data if applicable.
+            
+        Parameters
+        ----------
+        Xb : array-like
+            Can be either an array of of input patterns, or
+            a list of filenames for the input patterns. In 
+            case this is a list of filenames, files will be
+            opened before applying augmentation steps.
+        yb : array-like
+            Labels corresponding to input patterns. Should be
+            set to None when input patterns are unknown.
+
+        Returns
+        -------
+        X : array-like, same as Xb or numpy.ndarray
+            Input patterns after all augmentations are applied.
+        Y : array-like, same as yb
+            Labels after all augmentations are applied.
+        """
         X = copy.deepcopy(Xb)
         y = copy.deepcopy(yb)
         Xf = copy.deepcopy(self.features)
@@ -96,32 +158,131 @@ class AugmentationBatchIterator(BatchIterator):
             else:
                 y = y.astype(np.int32)
 
+
         return X, y
-        
+       
     def crop_images(self, X, Y, features, args={}, verbose=0):
+        """Crops an input to the selected size
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'x_range': list or tuple, default (0, X.shape[2])
+                    Contains beginning and endpoints of the slice in
+                    the x direction.
+                'y_range': list or tuple, default (0, X.shape[3])
+                    Contains beginning and endpoints of the slice in
+                    the y direction.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        X : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """
+        x_range = args['x_range'] if 'x_range' in args else (0, X.shape[2])
+        y_range = args['y_range'] if 'y_range' in args else (0, X.shape[3])
         
-        crop_ranges = args['ranges'] if 'ranges' in args else None
-        
-        if crop_ranges is not None:
-            X = X[:, :, crop_ranges[0][0]:crop_ranges[0][1], crop_ranges[1][0]:crop_ranges[1][1]]
+        X = X[:, :, x_range[0]:x_range[1], y_range[0]:y_range[1]]
 
         return X, Y, features
-    
+
     def select_dimensions(self, X, Y, features, args={}, verbose=0):
-        
+        """Selects which dimensions of X should be used 
+        (e.g. only R,G from RGB image).
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'dimensions': list or None, default None
+                    Indices of dimensions that should be kept.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        X : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """        
         dims = args['dimensions'] if 'dimensions' in args else None
         
         if dims is not None:
             X = X[:, dims, :]
 
         return X, Y, features    
-    
-    def shift_images(self, X, Y, features, args={}, verbose=0):
-        
-        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
 
-        xrang = args['xrange'] if 'xrange' in args else [2,4]
-        yrang = args['yrange'] if 'yrange' in args else [2,4]
+    def shift_images(self, X, Y, features, args={}, verbose=0):
+        """Shift images horizontally and vertically, randomly
+        selected from a given range. Shifting is done using
+        the shift function from scipy.ndimage.interpolate().
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'selected_classes': list or None, default None
+                    Labels of classes to which this augmentation should 
+                    be applied. Should be None for regression.
+                'x_range': list, default [-2,0,2]
+                    Possible number of pixels to shift the image in x direction.
+                'y_range': list, default [-2,0,2]
+                    Possible number of pixels to shift the image in y direction.
+                'mode': string, default 'constant'
+                    Mode of interpolation used for empty pixels. Possible
+                    values are 'constant', 'nearest', 'reflect', 'wrap'. The
+                    function used is scipy.ndimage.interpolate.shift().
+                'cval': float, default 0.0
+                    Constant value to use for all empty pixels. Only used when
+                    'mode' is set to 'constant'.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        X : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """   
+        selected_classes = args['selected_classes'] if 'selected_classes' in args else None
+        xrang = args['x_range'] if 'x_range' in args else [-2,0,2]
+        yrang = args['y_range'] if 'y_range' in args else [-2,0,2]
+        mode = args['mode'] if 'mode' in args else 'constant'
+        cval = args['cval'] if 'cval' in args else 0.0
 
         if selected_classes is not None:
             mask = np.in1d(Y, list(selected_classes))
@@ -133,49 +294,95 @@ class AugmentationBatchIterator(BatchIterator):
         for (i,b) in enumerate(mask):
             if b:
                 for j in xrange(X.shape[1]):
-                    X[i,j,:,:] = shift(X[i,j,:,:], [xrang[shift_x[i]], yrang[shift_y[i]]], output=X.dtype)
+                    X[i,j,:,:] = shift(X[i,j,:,:], 
+                                       [xrang[shift_x[i]], yrang[shift_y[i]]],
+                                       output=X.dtype, mode=mode, cval=cval)
 
         return X, Y, features
 
     
     def rotate_images(self, X, Y, features, args={}, verbose=0):
+        """Rotate images, rotation angle randomly selected from
+        a given range. Interpolation done using 
+        scipy.ndimage.interpolation.rotate()
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'selected_classes': list or None, default None
+                    Labels of classes to which this augmentation should 
+                    be applied. Should be None for regression.
+                'rotations': list, default [0,90,180,270]
+                    Possible values in degrees to rotate the image by.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        X : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """   
+
         rotations = args['rotations'] if 'rotations' in args else [0,90,180,270]
         selected_classes = args['selected_classes'] if 'selected_classes' in args else None
-
 
         if selected_classes is not None:
             mask = np.in1d(Y, list(selected_classes))
         else:
             mask = np.ones(len(Y))
-        rotate = np.random.randint(len(rotations), size=len(Y))
+        rotat = np.random.randint(len(rotations), size=len(Y))
         
         for (i,rot) in enumerate(mask):
-            if (rot and rotate[i]):
-                X[i] = scipy.ndimage.interpolation.rotate(X[i], rotations[rotate[i]], axes=(1, 2), reshape=False)
+            if (rot and rotat[i]):
+                X[i] = rotate(X[i], rotations[rotat[i]], axes=(1, 2), reshape=False)
 
-        return X,Y,features       
+        return X, Y, features       
 
-    
-    def extend_data(self, X, Y, features, args={}, verbose=0):
-    
-        cl = args['class']
-        data = args['data']        
-
-        if verbose > 0:
-            print("Extending class %s with %i elements ..." % (str(cl), len(data)))
-            
-        assert features is None
-        
-        X_extended = [X, data]
-        Y_extended = [Y, cl * np.ones(len(data))]
-        
-        newX = np.concatenate(X_extended, axis=0)
-        newY = np.concatenate(Y_extended, axis=0)
-        
-        return newX, newY, None            
     
     def fliplr(self, X, Y, features, args={}, verbose=0):
-        
+        """Horizontally mirrors each input pattern with a given probability.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'selected_classes': list or None, default None
+                    Labels of classes to which this augmentation should 
+                    be applied. Should be None for regression.
+                'prob': float, default 0.5
+                    Probability that pattern is mirrored, value between
+                    0 and 1.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        X : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """               
         selected_classes = args['selected_classes'] if 'selected_classes' in args else None
         prob = args['prob'] if 'prob' in args else 0.5
 
@@ -195,7 +402,37 @@ class AugmentationBatchIterator(BatchIterator):
         return X, Y, features
 
     def flipud(self, X, Y, features, args={}, verbose=0):
+        """Vertically mirrors each input pattern with a given probability.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'selected_classes': list or None, default None
+                    Labels of classes to which this augmentation should 
+                    be applied. Should be None for regression.
+                'prob': float, default 0.5
+                    Probability that pattern is mirrored, value between
+                    0 and 1.
+        verbose : integer, default 0
+            Controls verbosity of this method
 
+        Returns
+        -------
+        X : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """              
         selected_classes = args['selected_classes'] if 'selected_classes' in args else None
         prob = args['prob'] if 'prob' in args else 0.5
 
@@ -213,9 +450,43 @@ class AugmentationBatchIterator(BatchIterator):
     
         return X, Y, features
 
+
     def zoom_in(self, X, Y, features, args={}, verbose=0):
+        """Zooms in on the image, zoom factor randomly
+        selected from the given range of factors.
+        Image then cropped to original size.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'selected_classes': list or None, default None
+                    Labels of classes to which this augmentation should 
+                    be applied. Should be None for regression.
+                'factors': list, default [1.0, 1.1]
+                    Possible zooming factors, should all be >= 1.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        X : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """
+
         selected_classes = args['selected_classes'] if 'selected_classes' in args else None
-        factor = args['factor'] if 'factor' in args else [1.0, 1.1]
+        factor = args['factors'] if 'factors' in args else [1.0, 1.1]
 
         if selected_classes is not None:
             mask = np.in1d(Y, list(selected_classes))
@@ -243,23 +514,133 @@ class AugmentationBatchIterator(BatchIterator):
 
         return X[cur_x/2-hw:cur_x/2+hw, cur_y/2-hh:cur_y/2+hh]
 
-    def add_const(self, X, Y, features, args={}, verbose=0):
-        values = args['range'] if 'range' in args else [-50, 50]
 
-        const = np.random.rand() * (values[1]-values[0]) + values[0]
-        X += const
+    def add_const(self, X, Y, features, args={}, verbose=0):
+        """Adds a constant value to every input image. This
+        can be either the same value for every image, or 
+        a randomly selected value from a given range.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'range': int or list, default 10
+                    Adds the same constant to all inputs if input
+                    is an integer, otherwise adds a randomly 
+                    selected constant from the given range.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        X : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """
+        values = args['range'] if 'range' in args else [-50, 50]
+        if isinstance(values, int):
+            X += values
+        else:
+            X += np.random.rand(*X.shape) * (values[1]-values[0]) + values[0]
 
         return X, Y, features
 
     def add_noise(self, X, Y, features, args={}, verbose=0):
-        value = args['range'] if 'range' in args else 10
+        """Adds random noise to each input pattern.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'scale': list or int, default 10
+                    Value for the highest possible noise.
+                    If a list, this highest value will be
+                    randomly selected from the provided range.
+                'distribution': string, default 'gaussian'
+                    Type of distribution the noise should have.
+                    Supported values: 'gaussian', 'uniform'
+        verbose : integer, default 0
+            Controls verbosity of this method
 
-        shape = X.shape
-        X += np.random.normal(scale=value, size=shape)
+        Returns
+        -------
+        X : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """
+        values = args['scale'] if 'scale' in args else 10
+        dist = args['distribution'] if 'distribution' in args else 'gaussian'
 
+        if isinstance(values, int):
+            if dist == 'gaussian':
+                X += np.random.normal(scale=values, size=X.shape)
+            elif dist == 'uniform':
+                X += np.random.uniform(low=0, high=values, size=X.shape)
+
+        else:
+            scales = np.random.rand(len(Y)) * (values[1]-values[0]) + values[0]
+            if dist == 'gaussian':
+                for i in range(len(X)):
+                    X[i] += np.random.normal(scale=values[i], size=X[i].shape)
+            elif dist == 'uniform':
+                for i in range(len(X)):
+                    X[i] += np.random.uniform(low=0, high=values[i], size=X[i].shape)
+                
         return X, Y, features
 
     def edge_error(self, X, Y, features, args={}, verbose=0):
+        """Sets one side of the input pattern to a small
+        value, as seen in real CCD data.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'selected_classes': list or None, default None
+                    Labels of classes to which this augmentation should 
+                    be applied. Should be None for regression.
+                'prob': float, default 0.5
+                    Probability that an edge is set to zero, value 
+                    between 0 and 1.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        Xtransformed : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """
         selected_classes = args['selected_classes'] if 'selected_classes' in args else None
         prob = args['prob'] if 'prob' in args else 0.1
 
@@ -295,6 +676,38 @@ class AugmentationBatchIterator(BatchIterator):
         return im
 
     def add_dead_column(self, X, Y, features, args={}, verbose=0):
+        """Sets a random column for an input pattern to zero with
+        a given probability, as is common for faulty CCDs.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'selected_classes': list or None, default None
+                    Labels of classes to which this augmentation should 
+                    be applied. Should be None for regression.
+                'prob': float, default 0.5
+                    Probability that an input patterns will have
+                    a dead column. Value between 0 and 1.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        Xtransformed : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """
         selected_classes = args['selected_classes'] if 'selected_classes' in args else None
         prob = args['prob'] if 'prob' in args else 0.1
 
@@ -313,12 +726,51 @@ class AugmentationBatchIterator(BatchIterator):
 
         return Xtransformed, Y, features
 
-    #NEEDS TO BE LOOKED AT
+    # TO DO:
+    # Currently only creates stars with perfect Gaussian PSF
     def add_star(self, X, Y, features, args={}, verbose=0):
+        """Adds a foreground star to an image with a given
+        probability. Foreground star has a Gaussian PSF.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this augmentation:
+                'selected_classes': list or None, default None
+                    Labels of classes to which this augmentation should 
+                    be applied. Should be None for regression.
+                'prob': float, default 0.5
+                    Probability that a foreground star is added.
+                    Value between 0 and 1.
+                'L_range': list, default [0,100]
+                    Range of values from which the brightness of the 
+                    added star is selected.
+                'var_range': list, default [1,3]
+                    Range of values from which the width of the added
+                    star is selected.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        Xtransformed : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """
         selected_classes = args['selected_classes'] if 'selected_classes' in args else None
-        prob = args['prob'] if 'prob' in args else 0.999
-        mean_range = args['L_range'] if 'L_range' in args else [90000, 100000]
-        var_range = args['var_range'] if 'var_range' in args else [2,6]
+        prob = args['prob'] if 'prob' in args else 0.5
+        mean_range = args['L_range'] if 'L_range' in args else [0,100]
+        var_range = args['var_range'] if 'var_range' in args else [1,3]
 
         if selected_classes is not None:
             mask = np.in1d(Y, list(selected_classes))
@@ -349,55 +801,42 @@ class AugmentationBatchIterator(BatchIterator):
 
         return to_add.astype(np.float32)
 
-    def submean(self, X, Y, features, args={}, verbose=0):
-        
-        fit = args['fit'] if 'fit' in args else True
-        
-        if fit == True:
-            self._methods_cache["submean"] = {}
-            for i in xrange(X.shape[1]):
-                self._methods_cache["submean"][i] = np.mean(X[:,i,:,:], axis=0)
-        
+
+    def normalize(self, X, Y, features, args={}, verbose=0):
+        """Normalizes the input by computing the mean and
+        standard deviation of the current batch. The
+        mean is subtracted from the input and the input
+        is then divided by the standard deviation.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns
+        Y : array-like
+            Array of input labels
+        features : array-like
+            Extra input features
+        args : dictionary, default {}
+            This method does not have any parameters.
+        verbose : integer, default 0
+            Controls verbosity of this method
+
+        Returns
+        -------
+        Xtransformed : array-like, same as X
+            Input patterns after application of this augmentation step.
+        Y : array-like, same as Y
+            Labels after application of this augmentation step.
+        features : array-like, xame as features
+            Result of this augmentation step applied to features.
+        """
         Xtransformed = copy.deepcopy(X)
-        for i in xrange(X.shape[1]):
-            try:
-                Xtransformed[:,i,:,:] = X[:,i,:,:] - self._methods_cache["submean"][i]
-            except Exception as e:
-                print("Could not applying 'submean': %s" % str(e))    
         
+        mean = [np.mean(X[:,i]) for i in range(X.shape[1])]
+        std = [np.std(X[:,i]) for i in range(X.shape[1])]   
+
+        for i in range(X.shape[1]):
+            Xtransformed[:,i] = X[:,i] - mean[i]
+            Xtransformed[:,i] = Xtransformed[:,i]/std[i]
+
         return Xtransformed, Y, features
-    
-    def submean_per_image(self, X, Y, features, args={}, verbose=0):
-        
-        dims = args['dimensions'] if 'dimensions' in args else None
-        subtype = args['subtype'] if 'subtype' in args else "mean_all"
-        
-        Xtransformed = copy.deepcopy(X)
-        if dims is None:
-            dims = range(Xtransformed.shape[1])
-        
-        if subtype == "mean_all":    
-            for i in xrange(Xtransformed.shape[0]):
-                for j in dims:
-                    Xtransformed[i,j,:,:] = X[i,j,:,:] - np.mean(X[i,j,:,:])
-
-        elif subtype == "mean_edge":
-            for i in xrange(Xtransformed.shape[0]):
-                for j in dims:
-                    mean = (np.sum(X[i,j,:,:]) - np.sum(X[i,j,20:30, 20:30]))/2400
-                    Xtransformed[i,j,:,:] = X[i,j,:,:] - mean
-
-        elif subtype == "median_all":
-            for i in xrange(Xtransformed.shape[0]):
-                for j in dims:
-                    Xtransformed[i,j,:,:] = X[i,j,:,:] - np.median(X[i,j,:,:])
-
-        elif subtype == "median_edge":
-            for i in xrange(Xtransformed.shape[0]):
-                for j in dims:
-                    Xtransformed[i,j,20:30, 20:30] = np.amin(X[i,j,:,:])
-                    median = np.median(np.sort(Xtransformed[i,j,:,:], axis=None)[100:])
-                    Xtransformed[i,j,:,:] = X[i,j,:,:] - median
-                    Xtransformed[i,j,20:30,20:30] = X[i,j,20:30,20:30]
-        
-        return Xtransformed, Y, features    

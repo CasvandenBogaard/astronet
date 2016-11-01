@@ -38,6 +38,5 @@ def save_execution_file(odir):
         ofile.write(f.read())        
         
 def save_data(obj, fname):
-    
     with open(fname, 'wb') as f:
         pickle.dump(obj, f)

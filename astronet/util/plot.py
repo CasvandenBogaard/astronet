@@ -1,7 +1,7 @@
 '''
 Created on 26.07.2016
 
-@author: fgieseke
+@author: Fabian Gieseke, Cas van den Bogaard
 '''
 
 #import matplotlib
@@ -36,8 +36,24 @@ def _colorbar_fmt(x, pos):
     fm = '% *d' % (5, x)
     return fm
         
+    # TO DO:
+    # Allow both RGB images and a subplot for each layer.
 def plot_image(img, ofname, titles=None, figsize=(10,5), mode="2d"):
-    """ Three sub-images given ...
+    """ Plots and saves a given image, one subplot for each dimension.
+        
+    Parameters
+    ----------
+    img : array-like
+        The image that is to be plotted.
+    ofname : string
+        Filename for the output image.
+    titles : list, default None
+        A list of strings that are used as title for each
+        of the plotted dimensions.
+    figsize: tuple, default (10,5)
+        Size of the output figure.
+    mode : string
+        Mode of plotting. Either '2d' or '3d'.
     """
     
     assert mode in ["2d", "3d"]
@@ -70,16 +86,43 @@ def plot_image(img, ofname, titles=None, figsize=(10,5), mode="2d"):
     
     
     plt.savefig(ofname, bbox_inches='tight')
-    plt.close()            
+    plt.close()
 
-def plot_images(imgs, ofnames, titles=None, figsize=(5,5), mode="2d"):
-    
-    for i in xrange(len(imgs)):
-        img = imgs[i]
-        plot_image(img, ofnames[i], titles=titles, figsize=figsize, mode=mode)        
-
-
-class PlotHelper():
+# TO DO:
+# Add plot_loss and draw_to_file
+class PlotHandler():
+    """ Class that helps with the plotting of graphs
+        after testing of the performance.
+        
+    Parameters
+    ----------
+    plots : list
+        List of tuples, the first value being the
+        name of the plotting method, the second a
+        dictionary of parameters for that method.
+        Example:
+        plots = [
+                    ('confusion', {}),
+                    ('roc', {'title': "ROC-curve"}),
+                ]   
+    preds : array-like
+        Class predictions that the model has made.
+    preds_proba : array-like
+        Prediction probabilities that the model
+        has made.
+    y_test : array-like
+        True labels for the test patterns.
+    X_test : array-like
+        The test patterns.
+    indices_test : array-like
+        
+    model : AstroWrapper
+        The AstroWrapper model used to make these predictions.
+    odir : string
+        Relative path to the output directory.
+    verbose: integer, default 0
+        Verbosity level.
+    """
     def __init__(self, plots, preds, preds_proba, y_test, X_test, indices_test, model, odir, verbose=0):
         self._methods = {
             "confusion": self.confusion,
@@ -105,11 +148,34 @@ class PlotHelper():
 
         self.X_test_trans, self.y_test_trans = self.model.ABI_test.transform(self.X_test, self.y_test)
 
-    def plot(self, odir):
+    def plot(self):
+        """ Method to calls all selected plot methods.
+        """
         for pl in self.plots:
-            self._methods[pl[0]](pl[1], odir, self.verbose)
+            self._methods[pl[0]](pl[1], self.odir, self.verbose)
 
     def confusion(self,args,odir,verbose):
+        """ Plots and saves the confusion matrix.
+            Only works for classification problems.
+            
+        Parameters
+        ----------
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this plot:
+                'clabels': list, default ["Negative", "Positive"]
+                    Labels for the negative and positive classes.
+                'ofname': string, default "confusion.png"
+                    Name for the output file.
+                'figsize': tuple, default (10,10)
+                    Size of the output figure.
+                'cmap': string, default "YlGnBu"
+                    Name of the Seaborn color map that should be used.
+        odir : string
+            Relative path to the output directory.
+        verbose : integer, default 0
+            Verbosity level.
+        """
         clabels =   args['clabels']  if 'clabels'   in args else ["Negative", "Positive"]
         ofname =    args['ofname']   if 'ofname'    in args else "confusion.png"
         figsize =   args['figsize']  if 'figsize'   in args else (10,10)
@@ -126,7 +192,29 @@ class PlotHelper():
         plt.close()
 
     def roc(self,args,odir,verbose):
-        pos_label = args['pos label']   if 'pos label'  in args else 1
+        """ Plots and saves the ROC curve.
+            Only works for classification problems.
+            
+        Parameters
+        ----------
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this plot:
+                'pos_label': string or integer, default 1
+                    Value of the label of the positive class
+                'ofname': string, default "confusion.png"
+                    Name for the output file.
+                'title': string or None, default None
+                    Title to be used in the plot. Set to
+                    None for no title.
+                'figsize': tuple, default (10,10)
+                    Size of the output figure.
+        odir : string
+            Relative path to the output directory.
+        verbose : integer, default 0
+            Verbosity level.
+        """
+        pos_label = args['pos_label']   if 'pos_label'  in args else 1
         title =     args['title']       if 'title'      in args else None
         ofname =    args['ofname']      if 'ofname'     in args else "roc.png"
         figsize =   args['figsize']     if 'figsize'    in args else (10,10)
@@ -141,11 +229,38 @@ class PlotHelper():
         plt.close()
 
     def occlusion(self,args,odir,verbose):
-        im_range =  args['image range']     if 'image range'    in args else slice(0,1)
+        """ Computes and plots the occlusion heatmap.
+            This requires testing the image once for
+            every pixel and thus may be slow.
+            
+        Parameters
+        ----------
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this plot:
+                'image_range': slice, default slice(0,1)
+                    The indices of the images for which to
+                    compute the occlusion heatmap.
+                'ofname': string, default "occlusion"
+                    Name for the output files, without extension.
+                'title': string or None, default None
+                    Title to be used in the plot. Set to
+                    None for no title.
+                'figsize': tuple, default (10,10)
+                    Size of the output figure.
+                'square_length': integer, default 5
+                    Length of the sides of the square used
+                    in the occlusion.
+        odir : string
+            Relative path to the output directory.
+        verbose : integer, default 0
+            Verbosity level.
+        """
+        im_range =  args['image_range']     if 'image_range'    in args else slice(0,1)
         title =     args['title']           if 'title'          in args else None
         ofname =    args['ofname']          if 'ofname'         in args else "occlusion"
         figsize =   args['figsize']         if 'figsize'        in args else (10,10)
-        length =    args['square length']   if 'square length'  in args else 5
+        length =    args['square_length']   if 'square_length'  in args else 5
 
         imgs = self.X_test[im_range]
         labels = self.y_test[im_range]
@@ -179,6 +294,26 @@ class PlotHelper():
             plt.close()          
 
     def conv_weights(self,args,odir,verbose):
+        """ Plots the weights for a single 
+            convolutional layer.
+            
+        Parameters
+        ----------
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this plot:
+                'layer': integer, default 1
+                    Index of the layer for which the weights
+                    are plotted.
+                'ofname': string, default "occlusion"
+                    Name for the output files, without extension.
+                'figsize': tuple, default (10,10)
+                    Size of the output figure.
+        odir : string
+            Relative path to the output directory.
+        verbose : integer, default 0
+            Verbosity level.
+        """
         layer_i =  args['layer']    if 'layer'      in args else 1
         ofname =   args['ofname']   if 'ofname'     in args else "weights"
         figsize =  args['figsize']  if 'figsize'    in args else (10,10)
@@ -211,6 +346,29 @@ class PlotHelper():
             fig.savefig( os.path.join(odir, ofname+str(feature_map)+".png") )
 
     def conv_activation(self,args,odir,verbose):
+        """ Plots the activations of a single  
+            convolutional layer for a given image.
+            
+        Parameters
+        ----------
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this plot:
+                'layer': integer, default 1
+                    Index of the convolutional layer
+                    for which the activations are plotted.
+                'image_index': integer, default 0
+                    Index of the image for which the 
+                    activations are plotted.
+                'ofname': string, default "occlusion"
+                    Name for the output file.
+                'figsize': tuple, default (10,10)
+                    Size of the output figure.
+        odir : string
+            Relative path to the output directory.
+        verbose : integer, default 0
+            Verbosity level.
+        """
         layer_i =  args['layer']        if 'layer'          in args else 1
         image_i =  args['image index']  if 'image_index'    in args else 0
         ofname =   args['ofname']       if 'ofname'         in args else "activity.png"
@@ -254,7 +412,25 @@ class PlotHelper():
         
         fig.savefig( os.path.join(odir, ofname) )
 
+    # TO DO:
+    # Make it so that RGB can be plotted in one image, instead of three
     def misses(self,args,odir,verbose):
+        """ Plots all images for which the 
+            predicted class is wrong.
+            
+        Parameters
+        ----------
+        args : dictionary, default {}
+            Contains the key:value pairs for the
+            parameters of this plot:
+
+        #fix
+
+        odir : string
+            Relative path to the output directory.
+        verbose : integer, default 0
+            Verbosity level.
+        """
         titles =    args['image labels']    if 'image labels'   in args else ["before", "after", "diff"]
         mode =      args['mode']            if 'mode'           in args else '2d'
 
@@ -278,20 +454,62 @@ class PlotHelper():
             ensure_dir(ofname)
             plot_image(self.X_test[index], ofname, titles=titles, mode=mode)         
 
+# TO DO:
+# Test this function, add more metrics or ways to add metrics
+def assess_performance(preds, y_test, odir, metrics, ofname='results.txt'):
+    results = {}
+    if 'MCC' in metrics:
+        results['MCC'] = matthews_corrcoef(y_test, preds)
+    if 'accuracy' in metrics:
+        results['accuracy'] = accuracy_score(y_test, preds)
+    if 'precision' in metrics:
+        results['precision'] = precision_score(y_test, preds)
+    if 'recall' in metrics:
+        results['recall'] = recall_score(y_test, preds)
+
+    with open(os.path.join(odir, ofname), 'a') as result_file:
+        for m in metrics:
+            result_file.write(m + ": " + str(results[m]))
+            if verbose>0:
+                print m, ": ", result[m]
+
+# TO DO:
+# Replace this with a plotting function
 def assess_classification_performance(preds, y_test, odir, plots=None, X_test=None, indices_test=None, preds_proba=None, model=None, verbose=0):
-    mcc = matthews_corrcoef(y_test, preds)
-    acc = accuracy_score(y_test, preds)
-    precision = precision_score(y_test, preds)
-    recall = recall_score(y_test, preds)
+    """ Method for the calculation of performance metrics and
+        creating of selected plots.
+        
+    Parameters
+    ----------
+    preds : array-like
+        Class predictions that the model has made.
+    y_test : array-like
+        True labels for the test patterns.
+    odir : string
+        Relative path to the output directory.
+    plots : list or None, default None
+        List of tuples, the first value being the
+        name of the plotting method, the second a
+        dictionary of parameters for that method.
+        Example:
+        plots = [
+                    ('confusion', {}),
+                    ('roc', {'title': "ROC-curve"}),
+                ]   
+        Nothing is plotted when set to None.
+    X_test : array-like or None, default None
+        The test patterns, if necessary for plotting.
+    indices_test : array-like or None, default None
+        
+    preds_proba : array-like
+        Prediction probabilities that the model
+        has made.
+    model : AstroWrapper
+        The AstroWrapper model used to make these predictions.
 
-    if verbose > 0:
-        print("----------------------------------------------------------------")
-        print("Matthews Correlation Coefficient: \t" + str(mcc))
-        print("Accuracy: \t\t\t\t" + str(acc))
-        print("Precision: \t\t\t\t" + str(precision))
-        print("Recall: \t\t\t\t" + str(recall))    
-
-    store_results({'Matthews Correlation Coefficient':mcc, 'Accuracy':acc, 'Precision':precision, 'Recall':recall}, os.path.join(odir, "results.txt"))    
+    verbose: integer, default 0
+        Verbosity level.
+    """
 
     if plots:
         plot_helper = PlotHelper(plots, preds, preds_proba, y_test, X_test, indices_test, model, odir)

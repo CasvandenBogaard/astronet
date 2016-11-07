@@ -14,6 +14,8 @@ Contents:
    overview
    install
    classes
+   augmentations
+   auto_examples
 
 Indices and tables
 ==================

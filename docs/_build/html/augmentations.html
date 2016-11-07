@@ -1,0 +1,768 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Augmentations &mdash; AstroNet 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="AstroNet 0.1 documentation" href="index.html"/>
+        <link rel="prev" title="Main Classes" href="classes.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> AstroNet
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Main Classes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Augmentations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#standard-augmentations">Standard augmentations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cropping">Cropping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flipping">Flipping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#noise">Noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#normalization">Normalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rotation">Rotation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#selection">Selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shifting">Shifting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zooming">Zooming</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#astronomical-augmentations">Astronomical augmentations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ccd-errors">CCD Errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-foreground-stars">Adding foreground stars</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">AstroNet</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Augmentations</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/augmentations.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="augmentations">
+<h1>Augmentations<a class="headerlink" href="#augmentations" title="Permalink to this headline">¶</a></h1>
+<p>&#8216;astronet&#8217; contains many built-in data augmentation methods. Each of these methods
+are contained in their own class, only containing their own parameters and an &#8216;apply&#8217; method.
+The augmentations are shown below. To implement your own method, simply extend the Identity
+method and override the &#8216;apply&#8217; method to apply the augmentation that you want.</p>
+<div class="section" id="standard-augmentations">
+<h2>Standard augmentations<a class="headerlink" href="#standard-augmentations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cropping">
+<h3>Cropping<a class="headerlink" href="#cropping" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.Crop">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">Crop</code><span class="sig-paren">(</span><em>x_range=(0</em>, <em>-1)</em>, <em>y_range=(0</em>, <em>-1)</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crop an input to the selected range of values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x_range</strong> : tuple or list, default (0,-1)</p>
+<blockquote>
+<div><p>Contains beginning and endpoints of the slice in the x direction.</p>
+</div></blockquote>
+<p><strong>y_range</strong> : tuple or list, default (0,-1)</p>
+<blockquote>
+<div><p>Contains beginning and endpoints of the slice in the y direction.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.Crop.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Crop.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="flipping">
+<h3>Flipping<a class="headerlink" href="#flipping" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.FlipUD">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">FlipUD</code><span class="sig-paren">(</span><em>selected_classes=None</em>, <em>prob=0.5</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.FlipUD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vertically mirrors each input pattern with a given probability.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>selected_classes</strong> : list or None, default None</p>
+<blockquote>
+<div><p>Labels of classes to which this augmentation should 
+be applied. Should be None for regression.</p>
+</div></blockquote>
+<p><strong>prob</strong> : float, default 0.5</p>
+<blockquote>
+<div><p>A value between 0 and 1, which sets the probability
+with which an image is selected to be augmented.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="astronet.augmentations.FlipLR">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">FlipLR</code><span class="sig-paren">(</span><em>selected_classes=None</em>, <em>prob=0.5</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.FlipLR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Horizontally mirrors each input pattern with a given probability.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>selected_classes</strong> : list or None, default None</p>
+<blockquote>
+<div><p>Labels of classes to which this augmentation should 
+be applied. Should be None for regression.</p>
+</div></blockquote>
+<p><strong>prob</strong> : float, default 0.5</p>
+<blockquote>
+<div><p>A value between 0 and 1, which sets the probability
+with which an image is selected to be augmented.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+</div>
+<div class="section" id="noise">
+<h3>Noise<a class="headerlink" href="#noise" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.AddNoise">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">AddNoise</code><span class="sig-paren">(</span><em>scale=10</em>, <em>distribution='gaussian'</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.AddNoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add randomly generated noise from a given distribution to each input.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>scale</strong> : list or int, default 10</p>
+<blockquote>
+<div><p>Value for the highest possible noise. If a list, this highest value will be
+randomly selected from the provided range.</p>
+</div></blockquote>
+<p><strong>distribution</strong> : string, default &#8216;gaussian&#8217;</p>
+<blockquote>
+<div><p>Type of distribution the noise should have. Supported values: &#8216;gaussian&#8217;, &#8216;uniform&#8217;.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="astronet.augmentations.AddConstant">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">AddConstant</code><span class="sig-paren">(</span><em>values=[-50, 50], verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.AddConstant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Either adds a constant value to every image, or a randomly selected value for each
+image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>range</strong> : int or list, default 10</p>
+<blockquote>
+<div><p>Adds the same constant to all inputs if input is an integer, otherwise adds a randomly 
+selected constant from the given range.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+</div>
+<div class="section" id="normalization">
+<h3>Normalization<a class="headerlink" href="#normalization" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.Normalize">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">Normalize</code><span class="sig-paren">(</span><em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the batch mean and standard deviation. Then normalizes inputs by first 
+subtracting the mean, then dividing by the standard deviation. This prevents rounding
+errors when dealing with large inputs and allows for easier learning of the network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+</div>
+<div class="section" id="rotation">
+<h3>Rotation<a class="headerlink" href="#rotation" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.Rotate">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">Rotate</code><span class="sig-paren">(</span><em>selected_classes=None, rotations=[0, 90, 180, 270], verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate each input with a randomly selected angle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>selected_classes</strong> : list or None, default None</p>
+<blockquote>
+<div><p>Labels of classes to which this augmentation should 
+be applied. Should be None for regression.</p>
+</div></blockquote>
+<p><strong>rotations</strong> : list, default [0,90,180,270]</p>
+<blockquote>
+<div><p>Values of the angles that the algorithm can choose from.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+</div>
+<div class="section" id="selection">
+<h3>Selection<a class="headerlink" href="#selection" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.SelectDimensions">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">SelectDimensions</code><span class="sig-paren">(</span><em>dimensions=None</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.SelectDimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select certain dimensions from the input (e.g. only R channel from an RGB image, or
+only u and i filters from a stack of images in ugriz-bands.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dimensions</strong> : list or None, default None</p>
+<blockquote>
+<div><p>Indices of the dimensions that should be kept.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+</div>
+<div class="section" id="shifting">
+<h3>Shifting<a class="headerlink" href="#shifting" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.Shift">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">Shift</code><span class="sig-paren">(</span><em>selected_classes=None, x_range=[-2, 0, 2], y_range=[-2, 0, 2], mode='constant', cval=0, verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift each image with a randomly selected number of pixels, both horizontally and
+vertically. Empty pixels can be filled with a constant value or filled in another way.
+(See &#8216;scipy.ndimage.interpolation.shift&#8217; documentation.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>selected_classes</strong> : list or None, default None</p>
+<blockquote>
+<div><p>Labels of classes to which this augmentation should 
+be applied. Should be None for regression.</p>
+</div></blockquote>
+<p><strong>x_range</strong> : list, default [-2,0,2]</p>
+<blockquote>
+<div><p>Possible number of pixels to shift the image in x direction.</p>
+</div></blockquote>
+<p><strong>y_range</strong> : list, default [-2,0,2]</p>
+<blockquote>
+<div><p>Possible number of pixels to shift the image in y direction.</p>
+</div></blockquote>
+<p><strong>mode</strong> : string, default &#8216;constant&#8217;</p>
+<blockquote>
+<div><p>Mode of interpolation used for empty pixels. Possible
+values are &#8216;constant&#8217;, &#8216;nearest&#8217;, &#8216;reflect&#8217;, &#8216;wrap&#8217;. The
+function used is scipy.ndimage.interpolate.shift().</p>
+</div></blockquote>
+<p><strong>cval</strong> : float, default 0.0</p>
+<blockquote>
+<div><p>Constant value to use for all empty pixels. Only used when
+&#8216;mode&#8217; is set to &#8216;constant&#8217;.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+</div>
+<div class="section" id="zooming">
+<h3>Zooming<a class="headerlink" href="#zooming" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.ZoomIn">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">ZoomIn</code><span class="sig-paren">(</span><em>selected_classes=None, factors=[1, 1.0], verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.ZoomIn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zoom in each image with a randomly selected factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>selected_classes</strong> : list or None, default None</p>
+<blockquote>
+<div><p>Labels of classes to which this augmentation should 
+be applied. Should be None for regression.</p>
+</div></blockquote>
+<p><strong>factors</strong> : int, default [1, 1.0]</p>
+<blockquote>
+<div><p>Possible factors with which zooming is done.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="astronomical-augmentations">
+<h2>Astronomical augmentations<a class="headerlink" href="#astronomical-augmentations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ccd-errors">
+<h3>CCD Errors<a class="headerlink" href="#ccd-errors" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.EdgeError">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">EdgeError</code><span class="sig-paren">(</span><em>selected_classes=None</em>, <em>prob=0.5</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.EdgeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a random edge to values smaller than 1 with
+a given probability.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>selected_classes</strong> : list or None, default None</p>
+<blockquote>
+<div><p>Labels of classes to which this augmentation should 
+be applied. Should be None for regression.</p>
+</div></blockquote>
+<p><strong>prob</strong> : float, default 0.5</p>
+<blockquote>
+<div><p>A value between 0 and 1, which sets the probability
+with which an image is selected to be augmented.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.EdgeError.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.EdgeError.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="astronet.augmentations.DeadColumn">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">DeadColumn</code><span class="sig-paren">(</span><em>selected_classes=None</em>, <em>prob=0.5</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.DeadColumn" title="Permalink to this definition">¶</a></dt>
+<dd><p>With a given probability, set all values in a randomly selected
+column to zero.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>selected_classes</strong> : list or None, default None</p>
+<blockquote>
+<div><p>Labels of classes to which this augmentation should 
+be applied. Should be None for regression.</p>
+</div></blockquote>
+<p><strong>prob</strong> : float, default 0.5</p>
+<blockquote>
+<div><p>A value between 0 and 1, which sets the probability
+with which an image is selected to be augmented.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.DeadColumn.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.DeadColumn.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="adding-foreground-stars">
+<h3>Adding foreground stars<a class="headerlink" href="#adding-foreground-stars" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="astronet.augmentations.AddStar">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">AddStar</code><span class="sig-paren">(</span><em>selected_classes=None, prob=0.5, L_range=[0, 100], var_range=[1, 3], verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.AddStar" title="Permalink to this definition">¶</a></dt>
+<dd><p>With a given probability, add a foreground star to the input image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>selected_classes</strong> : list or None, default None</p>
+<blockquote>
+<div><p>Labels of classes to which this augmentation should 
+be applied. Should be None for regression.</p>
+</div></blockquote>
+<p><strong>prob</strong> : float, default 0.5</p>
+<blockquote>
+<div><p>Probability that a foreground star is added.
+Value between 0 and 1.</p>
+</div></blockquote>
+<p><strong>L_range</strong> : list, default [0,100]</p>
+<blockquote>
+<div><p>Range of values from which the brightness of the 
+added star is selected.</p>
+</div></blockquote>
+<p><strong>var_range</strong> : list, default [1,3]</p>
+<blockquote>
+<div><p>Range of values from which the width of the added
+star is selected.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="classes.html" class="btn btn-neutral" title="Main Classes" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Cas van den Bogaard, Fabian Gieseke.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

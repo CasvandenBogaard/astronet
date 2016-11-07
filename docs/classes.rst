@@ -21,5 +21,5 @@ AstroNet
 AugmentationBatchIterator
 -------------------------
 
-.. autoclass:: astronet.models.AugmentationBatchIterator
+.. autoclass:: astronet.augmentations.AugmentationBatchIterator
    :members:

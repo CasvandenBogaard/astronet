@@ -15,6 +15,7 @@
 import os
 import sys
 import sphinx_rtd_theme
+import sphinx_gallery
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -37,7 +38,13 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.githubpages',
     'numpydoc',
+    'sphinx_gallery.gen_gallery',
 ]
+
+sphinx_gallery_conf = {
+    'examples_dirs' : '../examples',
+    'gallery_dirs' : 'auto_examples'
+    }
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

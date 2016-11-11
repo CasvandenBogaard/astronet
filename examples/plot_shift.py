@@ -1,6 +1,6 @@
 """ 
-Shift
-==========
+Shifting input
+==============
 
 Example usage of the Shift augmentation.
  

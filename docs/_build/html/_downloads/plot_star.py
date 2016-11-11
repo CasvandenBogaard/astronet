@@ -1,6 +1,6 @@
 """ 
 Adding a foreground star
-==========
+========================
 
 Example usage of the AddStar augmentation.
  

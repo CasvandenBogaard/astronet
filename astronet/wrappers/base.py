@@ -8,7 +8,7 @@ import os
 import copy
 import numpy as np
 
-from .input import AugmentationBatchIterator
+from astronet.augmentations import AugmentationBatchIterator
 
 
 class AstroWrapper(object):

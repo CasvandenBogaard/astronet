@@ -3,8 +3,8 @@
 .. _sphx_glr_auto_examples_plot_deadcolumn.py:
 
  
-Dead column
-===========
+Simulating a dead CCD column
+============================
 
 Example usage of the DeadColumn augmentation. 
 
@@ -41,7 +41,7 @@ Example usage of the DeadColumn augmentation.
         ax[i][0].imshow(X[i][0])
         ax[i][1].imshow(Xtransformed[i][0])
 
-**Total running time of the script:** ( 0 minutes  0.558 seconds)
+**Total running time of the script:** ( 0 minutes  0.281 seconds)
 
 
 

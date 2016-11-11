@@ -6,7 +6,7 @@ Created on 03.11.2016
 
 from .base import AugmentationBatchIterator
 from .ccd import EdgeError, DeadColumn
-from .crop import Crop
+from .crop import Crop, RandomCrop
 from .flip import FlipLR, FlipUD
 from .noise import AddNoise, AddConstant
 from .normalize import Normalize

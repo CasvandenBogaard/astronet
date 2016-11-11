@@ -22,17 +22,17 @@ class AugmentationBatchIterator(BatchIterator):
         Augmentations that will be applied to the data in each batch. Each item in this list
         should be a class that extends the 'Identity' augmentation. The 'apply' method is called
         on each of the augmentations in this list in order.
-    balanced: boolean, default False
+    balanced : boolean, default False
         If set to True, will force each batch to contain 
         an equal amount of samples from each class. Only
         works for binary classification problems.
-    regression: boolean, default False
+    regression : boolean, default False
         Should be set to True when the labels are real
         values (regression) instead of distinct classes
         (classification).
-    seed: integer, default 0
+    seed : integer, default 0
         Integer to seed the random number generator.
-    verbose: integer, default 0
+    verbose : integer, default 0
         Specifies verbosity of the model.
     """
 

@@ -1,6 +1,6 @@
 """ 
-Crop
-==========
+Cropping the input
+==================
 
 Example usage of the Crop augmentation. Please note that the image seems to be zoomed in, but this is because matplotlib scales the images in a subplot to be of equal size.
  

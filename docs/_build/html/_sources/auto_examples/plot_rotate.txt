@@ -3,8 +3,8 @@
 .. _sphx_glr_auto_examples_plot_rotate.py:
 
  
-Rotate
-==========
+Rotating the input
+==================
 
 Example usage of the Rotate augmentation.
  
@@ -43,7 +43,7 @@ Example usage of the Rotate augmentation.
         ax[i][0].imshow(X[i].transpose(1,2,0), cmap=plt.get_cmap("gray"))
         ax[i][1].imshow(Xtransformed[i].transpose(1,2,0), cmap=plt.get_cmap("gray"))
 
-**Total running time of the script:** ( 0 minutes  0.559 seconds)
+**Total running time of the script:** ( 0 minutes  0.291 seconds)
 
 
 

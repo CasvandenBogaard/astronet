@@ -4,7 +4,7 @@
 
  
 Adding a foreground star
-==========
+========================
 
 Example usage of the AddStar augmentation.
  
@@ -40,7 +40,7 @@ Example usage of the AddStar augmentation.
         ax[i][0].imshow(X[i][0])
         ax[i][1].imshow(Xtransformed[i][0])
 
-**Total running time of the script:** ( 0 minutes  0.554 seconds)
+**Total running time of the script:** ( 0 minutes  0.270 seconds)
 
 
 

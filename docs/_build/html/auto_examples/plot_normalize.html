@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Normalization &mdash; AstroNet 0.1 documentation</title>
+  <title>Input normalization &mdash; AstroNet 0.1 documentation</title>
   
 
   
@@ -35,7 +35,10 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="AstroNet 0.1 documentation" href="../index.html"/> 
+    <link rel="top" title="AstroNet 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="Example Gallery" href="index.html"/>
+        <link rel="next" title="Horizontally flip the input" href="plot_fliplr.html"/>
+        <link rel="prev" title="Adding noise to the input" href="plot_noise.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -84,11 +87,26 @@
           
             
             
-                <ul>
+                <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classes.html">Main Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../augmentations.html">Augmentations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Example Gallery</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_edgeerror.html">Simulating a CCD edge error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_deadcolumn.html">Simulating a dead CCD column</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_star.html">Adding a foreground star</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_noise.html">Adding noise to the input</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Input normalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_fliplr.html">Horizontally flip the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_flipud.html">Vertically flip the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_rotate.html">Rotating the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_crop.html">Cropping the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_zoomin.html">Zooming in on the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_randomcrop.html">Random crops of a given size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_shift.html">Shifting input</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -119,7 +137,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>Normalization</li>
+          <li><a href="index.html">Example Gallery</a> &raquo;</li>
+      
+    <li>Input normalization</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -133,8 +153,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="normalization">
-<span id="sphx-glr-auto-examples-plot-normalize-py"></span><h1>Normalization<a class="headerlink" href="#normalization" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="input-normalization">
+<span id="sphx-glr-auto-examples-plot-normalize-py"></span><h1>Input normalization<a class="headerlink" href="#input-normalization" title="Permalink to this headline">¶</a></h1>
 <p>Example usage of the Normalize augmentation.</p>
 <img alt="../_images/sphx_glr_plot_normalize_001.png" class="align-center" src="../_images/sphx_glr_plot_normalize_001.png" />
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -160,7 +180,7 @@
     <span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">Xtransformed</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.549 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.274 seconds)</p>
 <div class="sphx-glr-footer container">
 <div class="sphx-glr-download container">
 <a class="reference download internal" href="../_downloads/plot_normalize.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_normalize.py</span></code></a></div>
@@ -174,6 +194,15 @@
            </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plot_fliplr.html" class="btn btn-neutral float-right" title="Horizontally flip the input" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="plot_noise.html" class="btn btn-neutral" title="Adding noise to the input" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

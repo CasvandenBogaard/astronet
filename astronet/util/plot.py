@@ -456,7 +456,7 @@ class PlotHandler():
 
 # TO DO:
 # Test this function, add more metrics or ways to add metrics
-def assess_performance(preds, y_test, odir, metrics, ofname='results.txt'):
+def assess_performance(preds, y_test, odir, metrics, ofname='results.txt', verbose=False):
     results = {}
     if 'MCC' in metrics:
         results['MCC'] = matthews_corrcoef(y_test, preds)
@@ -471,7 +471,7 @@ def assess_performance(preds, y_test, odir, metrics, ofname='results.txt'):
         for m in metrics:
             result_file.write(m + ": " + str(results[m]))
             if verbose>0:
-                print m, ": ", result[m]
+                print m, ": ", results[m]
 
 # TO DO:
 # Replace this with a plotting function

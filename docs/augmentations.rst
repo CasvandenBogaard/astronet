@@ -14,6 +14,9 @@ Cropping
 .. autoclass:: astronet.augmentations.Crop
    :members:
 
+.. autoclass:: astronet.augmentations.RandomCrop
+   :members:
+
 Flipping
 ~~~~~~~~
 .. autoclass:: astronet.augmentations.FlipUD

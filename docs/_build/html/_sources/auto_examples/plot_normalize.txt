@@ -3,8 +3,8 @@
 .. _sphx_glr_auto_examples_plot_normalize.py:
 
  
-Normalization
-==========
+Input normalization
+===================
 
 Example usage of the Normalize augmentation. 
  
@@ -44,7 +44,7 @@ Example usage of the Normalize augmentation.
         ax[i][0].imshow(X[i][0], vmin=0, vmax=10)
         ax[i][1].imshow(Xtransformed[i][0], vmin=0, vmax=10)
 
-**Total running time of the script:** ( 0 minutes  0.549 seconds)
+**Total running time of the script:** ( 0 minutes  0.274 seconds)
 
 
 

@@ -1,6 +1,6 @@
 """ 
-Rotate
-==========
+Rotating the input
+==================
 
 Example usage of the Rotate augmentation.
  

@@ -1,6 +1,6 @@
 """ 
-FlipLR
-==========
+Horizontally flip the input
+===========================
 
 Example usage of the FlipLR augmentation.
  

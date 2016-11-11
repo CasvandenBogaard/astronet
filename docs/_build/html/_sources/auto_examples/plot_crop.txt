@@ -3,8 +3,8 @@
 .. _sphx_glr_auto_examples_plot_crop.py:
 
  
-Crop
-==========
+Cropping the input
+==================
 
 Example usage of the Crop augmentation. Please note that the image seems to be zoomed in, but this is because matplotlib scales the images in a subplot to be of equal size.
  
@@ -42,7 +42,7 @@ Example usage of the Crop augmentation. Please note that the image seems to be z
         ax[i][0].imshow(X[i].transpose(1,2,0), cmap=plt.get_cmap("gray"))
         ax[i][1].imshow(Xtransformed[i].transpose(1,2,0), cmap=plt.get_cmap("gray"))
 
-**Total running time of the script:** ( 0 minutes  0.370 seconds)
+**Total running time of the script:** ( 0 minutes  0.374 seconds)
 
 
 

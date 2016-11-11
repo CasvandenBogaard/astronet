@@ -1,3 +1,9 @@
+.. _examples-index:
+
+Example Gallery
+===============
+
+This gallery contains examples designed to showcase the different augmentations that are implemented in astronet.
 
 .. raw:: html
 
@@ -58,6 +64,26 @@
    :hidden:
 
    /auto_examples/plot_star
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example usage of the AddNoise augmentation.   ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_noise_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_noise.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_noise
 
 .. raw:: html
 
@@ -158,6 +184,46 @@
    :hidden:
 
    /auto_examples/plot_crop
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example usage of the ZoomIn augmentation.   ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_zoomin_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_zoomin.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_zoomin
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example usage of the RandomCrop augmentation.   ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_randomcrop_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_randomcrop.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_randomcrop
 
 .. raw:: html
 

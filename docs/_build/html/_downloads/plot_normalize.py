@@ -1,6 +1,6 @@
 """ 
-Normalization
-==========
+Input normalization
+===================
 
 Example usage of the Normalize augmentation. 
  

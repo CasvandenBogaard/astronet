@@ -160,6 +160,22 @@ class AstroNet(NeuralNet):
                 (DenseLayer, {'num_units': output_size, 'nonlinearity': None}),
             ]
 
+        elif net_type == "Shallow1DNet":
+
+            layers = [
+                (InputLayer, {'shape': (None, shape[0], shape[1], shape[2])}),
+            
+                (Conv2DLayer, {'num_filters': 32, 'filter_size': (3, 1), 'pad': 0}),
+                (MaxPool2DLayer, {'pool_size': (2, 1)}),
+                (DropoutLayer, {'p':0.1}),
+                                            
+                (DenseLayer, {'num_units': 64}),
+                (DropoutLayer, {'p':0.5}),
+                (DenseLayer, {'num_units': 64}),
+            
+                (DenseLayer, {'num_units': output_size, 'nonlinearity': softmax}),
+            ]
+
         else:
             raise Exception("Unknown network type: %s" % str(net_type))
 

@@ -7,7 +7,9 @@ Main Classes
 AstroWrapper
 ------------
 
-.. autoclass:: astronet.models.AstroWrapper
+Wrapper blabla
+
+.. autoclass:: astronet.wrappers.AstroWrapper
    :members:
 
 AstroNet
@@ -20,6 +22,8 @@ AstroNet
 
 AugmentationBatchIterator
 -------------------------
+
+The 'AugmentationBatchIterator' (ABI) splits the input up in batches of a predefined size. Every time a batch is used during training, it will first be passed through the 'transform' method in the ABI, which applies the chosen augmentations to the batch, returning the transformed input.
 
 .. autoclass:: astronet.augmentations.AugmentationBatchIterator
    :members:

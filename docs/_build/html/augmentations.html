@@ -36,6 +36,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="AstroNet 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Example Gallery" href="auto_examples/index.html"/>
         <link rel="prev" title="Main Classes" href="classes.html"/> 
 
   
@@ -108,6 +109,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Example Gallery</a></li>
 </ul>
 
             
@@ -164,7 +166,7 @@ method and override the &#8216;apply&#8217; method to apply the augmentation tha
 <h3>Cropping<a class="headerlink" href="#cropping" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="astronet.augmentations.Crop">
-<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">Crop</code><span class="sig-paren">(</span><em>x_range=(0</em>, <em>-1)</em>, <em>y_range=(0</em>, <em>-1)</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Crop" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">Crop</code><span class="sig-paren">(</span><em>x_range=(0</em>, <em>None)</em>, <em>y_range=(0</em>, <em>None)</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Crop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Crop an input to the selected range of values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -190,6 +192,73 @@ method and override the &#8216;apply&#8217; method to apply the augmentation tha
 <dl class="method">
 <dt id="astronet.augmentations.Crop.apply">
 <code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Crop.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="astronet.augmentations.RandomCrop">
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">RandomCrop</code><span class="sig-paren">(</span><em>x_len=0</em>, <em>y_len=0</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.RandomCrop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crop an input to the selected range of values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>x_len</strong> : integer, default 0</p>
+<blockquote>
+<div><p>Width of the cropped input, no cropping when set to 0.</p>
+</div></blockquote>
+<p><strong>y_len</strong> : integer, default 0</p>
+<blockquote>
+<div><p>Height of the cropped input, no cropping when set to 0.</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 0</p>
+<blockquote class="last">
+<div><p>Verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.RandomCrop.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.RandomCrop.apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply the augmentation corresponding to this class to the input data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -481,7 +550,7 @@ function used is scipy.ndimage.interpolate.shift().</p>
 <h3>Zooming<a class="headerlink" href="#zooming" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="astronet.augmentations.ZoomIn">
-<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">ZoomIn</code><span class="sig-paren">(</span><em>selected_classes=None, factors=[1, 1.0], verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.ZoomIn" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">ZoomIn</code><span class="sig-paren">(</span><em>selected_classes=None, factors=[1, 1.1], verbose=0</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.ZoomIn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Zoom in each image with a randomly selected factor.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -705,6 +774,8 @@ star is selected.</p>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="auto_examples/index.html" class="btn btn-neutral float-right" title="Example Gallery" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="classes.html" class="btn btn-neutral" title="Main Classes" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

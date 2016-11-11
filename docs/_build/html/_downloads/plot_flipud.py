@@ -1,6 +1,6 @@
 """ 
-FlipUD
-==========
+Vertically flip the input
+=========================
 
 Example usage of the FlipUD augmentation.
  

@@ -15,7 +15,7 @@ Contents:
    install
    classes
    augmentations
-   auto_examples
+   auto_examples/index
 
 Indices and tables
 ==================

@@ -1,6 +1,6 @@
 """ 
-Edge error
-==========
+Simulating a CCD edge error
+===========================
 
 Example usage of the EdgeError augmentation.
  

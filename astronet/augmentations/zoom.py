@@ -1,5 +1,6 @@
 import numpy as np
 from skimage.transform import rescale
+import copy
 
 class ZoomIn():
     """ Zoom in each image with a randomly selected factor.
@@ -14,18 +15,19 @@ class ZoomIn():
     verbose : int, default 0
         Verbosity level.
     """
-    def __init__(self, selected_classes=None, factors=[1,1.0], verbose=0):
+    def __init__(self, selected_classes=None, factors=[1,1.1], verbose=0):
         self.selected_classes = selected_classes
         self.factor = factors
 
     def apply(self, X, Y, features):
+        Xtransformed = copy.deepcopy(X)
         if self.selected_classes is not None:
             mask = np.in1d(Y, list(self.selected_classes))
         else:
             mask = np.ones(len(Y))
         zooms = np.random.randint(len(self.factor), size=len(Y))
 
-        imshape = (X.shape[2], X.shape[3])
+        imshape = (Xtransformed.shape[2], Xtransformed.shape[3])
 
         for (i,m) in enumerate(mask):
             if m:
@@ -33,9 +35,9 @@ class ZoomIn():
                     pass
                 else:
                     for j in range(len(X[i])):
-                        X[i,j] = self._crop_zoom(rescale(X[i,j], self.factor[zooms[i]], preserve_range=True), imshape)
+                        Xtransformed[i,j] = self._crop_zoom(rescale(Xtransformed[i,j], self.factor[zooms[i]], preserve_range=True), imshape)
 
-        return X, Y, features
+        return Xtransformed, Y, features
 
     @staticmethod
     def _crop_zoom(X, imshape):

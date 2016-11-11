@@ -3,8 +3,8 @@
 .. _sphx_glr_auto_examples_plot_edgeerror.py:
 
  
-Edge error
-==========
+Simulating a CCD edge error
+===========================
 
 Example usage of the EdgeError augmentation.
  
@@ -40,7 +40,7 @@ Example usage of the EdgeError augmentation.
         ax[i][0].imshow(X[i][0])
         ax[i][1].imshow(Xtransformed[i][0])
 
-**Total running time of the script:** ( 0 minutes  0.559 seconds)
+**Total running time of the script:** ( 0 minutes  0.330 seconds)
 
 
 

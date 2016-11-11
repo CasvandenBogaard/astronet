@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>&lt;no title&gt; &mdash; AstroNet 0.1 documentation</title>
+  <title>Example Gallery &mdash; AstroNet 0.1 documentation</title>
   
 
   
@@ -35,7 +35,9 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="AstroNet 0.1 documentation" href="../index.html"/> 
+    <link rel="top" title="AstroNet 0.1 documentation" href="../index.html"/>
+        <link rel="next" title="Simulating a CCD edge error" href="plot_edgeerror.html"/>
+        <link rel="prev" title="Augmentations" href="../augmentations.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -84,11 +86,26 @@
           
             
             
-                <ul>
+                <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classes.html">Main Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../augmentations.html">Augmentations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example Gallery</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plot_edgeerror.html">Simulating a CCD edge error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_deadcolumn.html">Simulating a dead CCD column</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_star.html">Adding a foreground star</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_noise.html">Adding noise to the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_normalize.html">Input normalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_fliplr.html">Horizontally flip the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_flipud.html">Vertically flip the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_rotate.html">Rotating the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_crop.html">Cropping the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_zoomin.html">Zooming in on the input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_randomcrop.html">Random crops of a given size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_shift.html">Shifting input</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -119,7 +136,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>&lt;no title&gt;</li>
+    <li>Example Gallery</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -133,15 +150,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="sphx-glr-thumbcontainer" tooltip="Example usage of the EdgeError augmentation.   "><div class="figure" id="id1">
+  <div class="section" id="example-gallery">
+<span id="examples-index"></span><h1>Example Gallery<a class="headerlink" href="#example-gallery" title="Permalink to this headline">¶</a></h1>
+<p>This gallery contains examples designed to showcase the different augmentations that are implemented in astronet.</p>
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the EdgeError augmentation.   "><div class="figure" id="id1">
 <img alt="../_images/sphx_glr_plot_edgeerror_thumb.png" src="../_images/sphx_glr_plot_edgeerror_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_edgeerror.html#sphx-glr-auto-examples-plot-edgeerror-py"><span class="std std-ref">Edge error</span></a></span></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_edgeerror.html#sphx-glr-auto-examples-plot-edgeerror-py"><span class="std std-ref">Simulating a CCD edge error</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
 <div class="sphx-glr-thumbcontainer" tooltip="Example usage of the DeadColumn augmentation. "><div class="figure" id="id2">
 <img alt="../_images/sphx_glr_plot_deadcolumn_thumb.png" src="../_images/sphx_glr_plot_deadcolumn_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_deadcolumn.html#sphx-glr-auto-examples-plot-deadcolumn-py"><span class="std std-ref">Dead column</span></a></span></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_deadcolumn.html#sphx-glr-auto-examples-plot-deadcolumn-py"><span class="std std-ref">Simulating a dead CCD column</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -151,39 +171,57 @@
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the Normalize augmentation.    "><div class="figure" id="id4">
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the AddNoise augmentation.   "><div class="figure" id="id4">
+<img alt="../_images/sphx_glr_plot_noise_thumb.png" src="../_images/sphx_glr_plot_noise_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_noise.html#sphx-glr-auto-examples-plot-noise-py"><span class="std std-ref">Adding noise to the input</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the Normalize augmentation.    "><div class="figure" id="id5">
 <img alt="../_images/sphx_glr_plot_normalize_thumb.png" src="../_images/sphx_glr_plot_normalize_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_normalize.html#sphx-glr-auto-examples-plot-normalize-py"><span class="std std-ref">Normalization</span></a></span></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_normalize.html#sphx-glr-auto-examples-plot-normalize-py"><span class="std std-ref">Input normalization</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the FlipLR augmentation.   "><div class="figure" id="id5">
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the FlipLR augmentation.   "><div class="figure" id="id6">
 <img alt="../_images/sphx_glr_plot_fliplr_thumb.png" src="../_images/sphx_glr_plot_fliplr_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_fliplr.html#sphx-glr-auto-examples-plot-fliplr-py"><span class="std std-ref">FlipLR</span></a></span></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_fliplr.html#sphx-glr-auto-examples-plot-fliplr-py"><span class="std std-ref">Horizontally flip the input</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the FlipUD augmentation.   "><div class="figure" id="id6">
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the FlipUD augmentation.   "><div class="figure" id="id7">
 <img alt="../_images/sphx_glr_plot_flipud_thumb.png" src="../_images/sphx_glr_plot_flipud_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_flipud.html#sphx-glr-auto-examples-plot-flipud-py"><span class="std std-ref">FlipUD</span></a></span></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_flipud.html#sphx-glr-auto-examples-plot-flipud-py"><span class="std std-ref">Vertically flip the input</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the Rotate augmentation.   "><div class="figure" id="id7">
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the Rotate augmentation.   "><div class="figure" id="id8">
 <img alt="../_images/sphx_glr_plot_rotate_thumb.png" src="../_images/sphx_glr_plot_rotate_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_rotate.html#sphx-glr-auto-examples-plot-rotate-py"><span class="std std-ref">Rotate</span></a></span></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_rotate.html#sphx-glr-auto-examples-plot-rotate-py"><span class="std std-ref">Rotating the input</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the Crop augmentation. Please note that the image seems to be zoomed in, but t..."><div class="figure" id="id8">
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the Crop augmentation. Please note that the image seems to be zoomed in, but t..."><div class="figure" id="id9">
 <img alt="../_images/sphx_glr_plot_crop_thumb.png" src="../_images/sphx_glr_plot_crop_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_crop.html#sphx-glr-auto-examples-plot-crop-py"><span class="std std-ref">Crop</span></a></span></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_crop.html#sphx-glr-auto-examples-plot-crop-py"><span class="std std-ref">Cropping the input</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the Shift augmentation.   "><div class="figure" id="id9">
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the ZoomIn augmentation.   "><div class="figure" id="id10">
+<img alt="../_images/sphx_glr_plot_zoomin_thumb.png" src="../_images/sphx_glr_plot_zoomin_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_zoomin.html#sphx-glr-auto-examples-plot-zoomin-py"><span class="std std-ref">Zooming in on the input</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the RandomCrop augmentation.   "><div class="figure" id="id11">
+<img alt="../_images/sphx_glr_plot_randomcrop_thumb.png" src="../_images/sphx_glr_plot_randomcrop_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_randomcrop.html#sphx-glr-auto-examples-plot-randomcrop-py"><span class="std std-ref">Random crops of a given size</span></a></span></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Example usage of the Shift augmentation.   "><div class="figure" id="id12">
 <img alt="../_images/sphx_glr_plot_shift_thumb.png" src="../_images/sphx_glr_plot_shift_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_shift.html#sphx-glr-auto-examples-plot-shift-py"><span class="std std-ref">Shift</span></a></span></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_shift.html#sphx-glr-auto-examples-plot-shift-py"><span class="std std-ref">Shifting input</span></a></span></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -194,11 +232,21 @@
 <a class="reference download internal" href="../_downloads/auto_examples_jupyter.zip" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Jupyter</span> <span class="pre">notebooks:</span> <span class="pre">auto_examples_jupyter.zip</span></code></a></div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="http://sphinx-gallery.readthedocs.io">Generated by Sphinx-Gallery</a></p>
+</div>
 
 
            </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plot_edgeerror.html" class="btn btn-neutral float-right" title="Simulating a CCD edge error" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../augmentations.html" class="btn btn-neutral" title="Augmentations" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

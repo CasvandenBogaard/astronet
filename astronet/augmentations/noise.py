@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 class AddNoise():
     """ Add randomly generated noise from a given distribution to each input.
@@ -19,22 +20,23 @@ class AddNoise():
         self.verbose = verbose
 
     def apply(self, X, Y, features):
+        Xtransformed = copy.deepcopy(X)
         if isinstance(self.values, int):
             if self.dist == 'gaussian':
-                X += np.random.normal(scale=self.values, size=X.shape)
+                Xtransformed += np.random.normal(scale=self.values, size=Xtransformed.shape)
             elif self.dist == 'uniform':
-                X += np.random.uniform(low=0, high=self.values, size=X.shape)
+                Xtransformed += np.random.uniform(low=0, high=self.values, size=Xtransformed.shape)
 
         else:
             scales = np.random.rand(len(Y)) * (self.values[1]-self.values[0]) + self.values[0]
             if self.dist == 'gaussian':
-                for i in range(len(X)):
-                    X[i] += np.random.normal(scale=self.values[i], size=X[i].shape)
+                for i in range(len(Xtransformed)):
+                    Xtransformed[i] += np.random.normal(scale=scales[i], size=Xtransformed[i].shape)
             elif self.dist == 'uniform':
-                for i in range(len(X)):
-                    X[i] += np.random.uniform(low=0, high=self.values[i], size=X[i].shape)
+                for i in range(len(Xtransformed)):
+                    Xtransformed[i] += np.random.uniform(low=0, high=scales[i], size=Xtransformed[i].shape)
                 
-        return X, Y, features
+        return Xtransformed, Y, features
 
 class AddConstant():
     """ Either adds a constant value to every image, or a randomly selected value for each
@@ -53,9 +55,10 @@ class AddConstant():
         self.verbose = verbose
 
     def apply(self, X, Y, features):
+        Xtransformed = copy.deepcopy(X)
         if isinstance(self.values, int):
-            X += self.values
+            Xtransformed += self.values
         else:
-            X += np.random.rand(*X.shape) * (self.values[1]-self.values[0]) + self.values[0]
+            Xtransformed += np.random.rand(*X.shape) * (self.values[1]-self.values[0]) + self.values[0]
 
-        return X, Y, features
+        return Xtransformed, Y, features

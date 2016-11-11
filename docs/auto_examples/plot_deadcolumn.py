@@ -1,6 +1,6 @@
 """ 
-Dead column
-===========
+Simulating a dead CCD column
+============================
 
 Example usage of the DeadColumn augmentation. 
 

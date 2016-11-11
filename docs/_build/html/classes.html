@@ -96,6 +96,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="augmentations.html">Augmentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Example Gallery</a></li>
 </ul>
 
             
@@ -144,6 +145,288 @@
 <h1>Main Classes<a class="headerlink" href="#main-classes" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="astrowrapper">
 <h2>AstroWrapper<a class="headerlink" href="#astrowrapper" title="Permalink to this headline">¶</a></h2>
+<p>Wrapper blabla</p>
+<dl class="class">
+<dt id="astronet.wrappers.AstroWrapper">
+<em class="property">class </em><code class="descclassname">astronet.wrappers.</code><code class="descname">AstroWrapper</code><span class="sig-paren">(</span><em>net</em>, <em>regression=False</em>, <em>batch_size=128</em>, <em>balanced=False</em>, <em>augments=[]</em>, <em>transforms=[]</em>, <em>seed=0</em>, <em>verbose=1</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.wrappers.AstroWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper that extends the functionality of the
+&#8216;nolearn.lasagne.NeuralNet&#8217; class. Added functionality
+includes on-the-fly data augmentation, loading data in
+batches and balancing classes.</p>
+<p>&#8216;astronet&#8217; is designed for use with astrophysical data.
+It can be used on before-after-diff images for transient
+detection, timeseries such as lightcurve data or any other
+type of data in image or timeseries form. The augmentations
+implemented in &#8216;astronet&#8217; include both standard augmentations,
+like normalization, flipping and rotation, and augmentations
+designed for astrophysical data, like adding foreground stars,
+or modelling CCD errors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>net</strong> : nolearn.lasagne.NeuralNet</p>
+<blockquote>
+<div><p>The network that will be used in training and testing.</p>
+</div></blockquote>
+<p><strong>regression</strong> : boolean, default False</p>
+<blockquote>
+<div><p>Specifies if training labels are classes or continuous.</p>
+</div></blockquote>
+<p><strong>batch_size</strong> : int, default 128</p>
+<blockquote>
+<div><p>Number of input samples per batch.</p>
+</div></blockquote>
+<p><strong>balanced</strong> : boolean, default False</p>
+<blockquote>
+<div><p>If true, ensures that each batch contains an equal amount 
+of samples from all classes. Only implemented for binary
+classification.</p>
+</div></blockquote>
+<p><strong>augments</strong> : list, default []</p>
+<blockquote>
+<div><p>Augmentation steps that shall be applied
+to the data before training the model. The
+ordering does matter. Each element is a tuple
+with two elements, where the first element is
+a string specifying the method and the second 
+is a dictionary with the parameters for the 
+augmentation method.</p>
+</div></blockquote>
+<p><strong>transforms</strong> : list, default []</p>
+<blockquote>
+<div><p>Transformations that will be applied to 
+the images/patterns before training or
+applying the model. This list has the same
+form as the list with augmentations.</p>
+</div></blockquote>
+<p><strong>seed</strong> : int, default 0</p>
+<blockquote>
+<div><p>The seed to be used</p>
+</div></blockquote>
+<p><strong>verbose</strong> : int, default 1</p>
+<blockquote class="last">
+<div><p>Verbosity level</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>With the following list of augments, all training data will be
+flipped with the default probability (0.5), and then a random
+value between -10 and 10 is added to each input.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">astronet</span> <span class="k">import</span> <span class="n">AstroNet</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">augments</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="p">(</span><span class="s1">&#39;flipud&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+<span class="gp">&gt;&gt;&gt; </span>            <span class="p">(</span><span class="s1">&#39;add_const&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;range&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span>           <span class="p">]</span>  
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net1</span> <span class="o">=</span> <span class="n">AstroNet</span><span class="p">(</span><span class="s1">&#39;ShallowNet&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model1</span> <span class="o">=</span> <span class="n">AstroWrapper</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">augments</span><span class="o">=</span><span class="n">augments</span><span class="p">)</span>           
+</pre></div>
+</div>
+<p>After the AstroWrapper has been created, one can still add 
+augmentations using the &#8216;add_augment&#8217; method. The following
+results in an equivalent model.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net2</span> <span class="o">=</span> <span class="n">AstroNet</span><span class="p">(</span><span class="s1">&#39;ShallowNet&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model2</span> <span class="o">=</span> <span class="n">AstroWrapper</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model2</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="s1">&#39;flipud&#39;</span><span class="p">,</span> <span class="p">{})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model2</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="s1">&#39;add_const&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;range&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">]})</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.wrappers.AstroWrapper.add_augment">
+<code class="descname">add_augment</code><span class="sig-paren">(</span><em>method</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.wrappers.AstroWrapper.add_augment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to add augmentation steps after initializationof the AugmentationBatchIterator. Calls the method in the AugmentationBatchIterator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>method</strong> : string</p>
+<blockquote>
+<div><p>Name of the augmentation that should be added.
+Should be key in self._methods</p>
+</div></blockquote>
+<p><strong>augments</strong> : dictionary, default {}</p>
+<blockquote class="last">
+<div><p>Parameters for augmentation that is to be added. 
+Should be given in the form {&#8216;k1&#8217;:v1, &#8216;k2&#8217;:v2}.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="astronet.wrappers.AstroWrapper.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>XI_train</em>, <em>y_train</em>, <em>XF_train=None</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.wrappers.AstroWrapper.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the deep network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>XI_train</strong> : array-like</p>
+<blockquote>
+<div><p>Array of training images</p>
+</div></blockquote>
+<p><strong>y_train</strong> : array-like</p>
+<blockquote>
+<div><p>Training labels</p>
+</div></blockquote>
+<p><strong>XF_train</strong> : array-like or None, default None</p>
+<blockquote class="last">
+<div><p>Optional: Array of training patterns (features)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="astronet.wrappers.AstroWrapper.get_params">
+<code class="descname">get_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#astronet.wrappers.AstroWrapper.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current model parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dictionary</p>
+<blockquote class="last">
+<div><p>Parameters of the model.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="astronet.wrappers.AstroWrapper.load_weights">
+<code class="descname">load_weights</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.wrappers.AstroWrapper.load_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads previously saved weights. Weights should be loaded from a network with the same architecture as the current network only.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>fname</strong> : string</p>
+<blockquote class="last">
+<div><p>Relative path to the pickle file containing the
+weights.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="astronet.wrappers.AstroWrapper.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em>, <em>XF=None</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.wrappers.AstroWrapper.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes predictions for new instances</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input images</p>
+</div></blockquote>
+<p><strong>XF</strong> : array-like or None</p>
+<blockquote>
+<div><p>Optional: Array of patterns (features)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>preds</strong> : array-like</p>
+<blockquote class="last">
+<div><p>The predictions computed by the model</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="astronet.wrappers.AstroWrapper.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em>, <em>XF=None</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.wrappers.AstroWrapper.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes predictions (probs) for new instances</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input images</p>
+</div></blockquote>
+<p><strong>XF</strong> : array-like or None</p>
+<blockquote>
+<div><p>Optional: Array of patterns (features)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>preds</strong> : array-like</p>
+<blockquote class="last">
+<div><p>The predictions computed by the model</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="astronet.wrappers.AstroWrapper.save_weights">
+<code class="descname">save_weights</code><span class="sig-paren">(</span><em>odir</em>, <em>ofname</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.wrappers.AstroWrapper.save_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the weights of the current model to a pickle file, to be loaded at a later stage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>odir</strong> : string</p>
+<blockquote>
+<div><p>Relative path to the output directory.</p>
+</div></blockquote>
+<p><strong>ofname</strong> : string</p>
+<blockquote class="last">
+<div><p>Filename of the output pickle file.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="astronet.wrappers.AstroWrapper.set_params">
+<code class="descname">set_params</code><span class="sig-paren">(</span><em>**parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.wrappers.AstroWrapper.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets model parameters and returns self. Also recreates AugmentationBatchIterators with new model parameters.</p>
+<dl class="docutils">
+<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>parameters</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>Parameters of the model.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>self</strong> : AstroWrapper</p>
+<blockquote class="last">
+<div><p>AstroWrapper with the changed values and new
+AugmentationBatchIterators for these values.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="astronet">
 <h2>AstroNet<a class="headerlink" href="#astronet" title="Permalink to this headline">¶</a></h2>
@@ -237,6 +520,7 @@ number of classes to predict.</p>
 </div>
 <div class="section" id="augmentationbatchiterator">
 <h2>AugmentationBatchIterator<a class="headerlink" href="#augmentationbatchiterator" title="Permalink to this headline">¶</a></h2>
+<p>The &#8216;AugmentationBatchIterator&#8217; (ABI) splits the input up in batches of a predefined size. Every time a batch is used during training, it will first be passed through the &#8216;transform&#8217; method in the ABI, which applies the chosen augmentations to the batch, returning the transformed input.</p>
 <dl class="class">
 <dt id="astronet.augmentations.AugmentationBatchIterator">
 <em class="property">class </em><code class="descclassname">astronet.augmentations.</code><code class="descname">AugmentationBatchIterator</code><span class="sig-paren">(</span><em>batch_size</em>, <em>augments=[]</em>, <em>balanced=False</em>, <em>regression=False</em>, <em>seed=0</em>, <em>verbose=1</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.AugmentationBatchIterator" title="Permalink to this definition">¶</a></dt>
@@ -255,23 +539,23 @@ number of classes to predict.</p>
 should be a class that extends the &#8216;Identity&#8217; augmentation. The &#8216;apply&#8217; method is called
 on each of the augmentations in this list in order.</p>
 </div></blockquote>
-<p><strong>balanced: boolean, default False</strong></p>
+<p><strong>balanced</strong> : boolean, default False</p>
 <blockquote>
 <div><p>If set to True, will force each batch to contain 
 an equal amount of samples from each class. Only
 works for binary classification problems.</p>
 </div></blockquote>
-<p><strong>regression: boolean, default False</strong></p>
+<p><strong>regression</strong> : boolean, default False</p>
 <blockquote>
 <div><p>Should be set to True when the labels are real
 values (regression) instead of distinct classes
 (classification).</p>
 </div></blockquote>
-<p><strong>seed: integer, default 0</strong></p>
+<p><strong>seed</strong> : integer, default 0</p>
 <blockquote>
 <div><p>Integer to seed the random number generator.</p>
 </div></blockquote>
-<p><strong>verbose: integer, default 0</strong></p>
+<p><strong>verbose</strong> : integer, default 0</p>
 <blockquote class="last">
 <div><p>Specifies verbosity of the model.</p>
 </div></blockquote>

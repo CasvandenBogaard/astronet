@@ -278,7 +278,7 @@ method and override the &#8216;apply&#8217; method to apply the augmentation tha
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like (same as X)</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
 <blockquote>
 <div><p>Array of transformed input patterns.</p>
 </div></blockquote>
@@ -328,6 +328,46 @@ with which an image is selected to be augmented.</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.FlipUD.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.FlipUD.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -357,6 +397,46 @@ with which an image is selected to be augmented.</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.FlipLR.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.FlipLR.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -388,6 +468,46 @@ randomly selected from the provided range.</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.AddNoise.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.AddNoise.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -413,6 +533,46 @@ selected constant from the given range.</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.AddConstant.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.AddConstant.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -437,6 +597,46 @@ errors when dealing with large inputs and allows for easier learning of the netw
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.Normalize.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Normalize.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -468,6 +668,46 @@ be applied. Should be None for regression.</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.Rotate.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Rotate.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -495,6 +735,46 @@ only u and i filters from a stack of images in ugriz-bands.)</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.SelectDimensions.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.SelectDimensions.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -543,6 +823,46 @@ function used is scipy.ndimage.interpolate.shift().</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.Shift.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.Shift.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -574,6 +894,46 @@ be applied. Should be None for regression.</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.ZoomIn.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.ZoomIn.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -762,6 +1122,46 @@ star is selected.</p>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
+<dl class="method">
+<dt id="astronet.augmentations.AddStar.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>features</em><span class="sig-paren">)</span><a class="headerlink" href="#astronet.augmentations.AddStar.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the augmentation corresponding to this class to the input data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like</p>
+<blockquote>
+<div><p>Array of input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array-like</p>
+<blockquote>
+<div><p>Array of extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Xtransformed</strong> : array-like (same as X)</p>
+<blockquote>
+<div><p>Array of transformed input patterns.</p>
+</div></blockquote>
+<p><strong>Y</strong> : array-like (same as Y)</p>
+<blockquote>
+<div><p>Array of transformed input labels.</p>
+</div></blockquote>
+<p><strong>features</strong> : array&#8211;like (same as features)</p>
+<blockquote class="last">
+<div><p>Array of transformed extra input features.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>

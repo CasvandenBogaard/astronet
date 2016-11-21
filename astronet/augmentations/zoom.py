@@ -20,6 +20,26 @@ class ZoomIn():
         self.factor = factors
 
     def apply(self, X, Y, features):
+        """Apply the augmentation corresponding to this class to the input data.
+            
+        Parameters
+        ----------
+        X : array-like
+            Array of input patterns.
+        Y : array-like
+            Array of input labels.
+        features : array-like
+            Array of extra input features.
+
+        Returns
+        -------
+        Xtransformed : array-like (same as X)
+            Array of transformed input patterns.
+        Y : array-like (same as Y)
+            Array of transformed input labels.
+        features : array--like (same as features)
+            Array of transformed extra input features.
+        """
         Xtransformed = copy.deepcopy(X)
         if self.selected_classes is not None:
             mask = np.in1d(Y, list(self.selected_classes))

@@ -7,7 +7,7 @@ Main Classes
 AstroWrapper
 ------------
 
-Wrapper blabla
+'AstroWrapper' handles things like training, testing, saving/loading of the weights after supplying it with a network structure and some parameters.
 
 .. autoclass:: astronet.wrappers.AstroWrapper
    :members:

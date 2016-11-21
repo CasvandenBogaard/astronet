@@ -75,7 +75,7 @@ class RandomCrop():
 
         Returns
         -------
-        X : array-like (same as X)
+        Xtransformed : array-like (same as X)
             Array of transformed input patterns.
         Y : array-like (same as Y)
             Array of transformed input labels.
